@@ -48,11 +48,11 @@ public class MapRootView extends RelativeLayout {
         addData(new LatLng(-1.082650, 23.049303), getResources().getDrawable(R.drawable.tiger), "wDkZEUGRzMQ");
     }
 
-    private void addData(LatLng latLng, Drawable drawable, String key){
+    private void addData(LatLng latLng, Drawable drawable, String key) {
 
         final MapItem mapItem = new MapItem();
         mapItem.image = drawable;
-        mapItem.point = latLng ;
+        mapItem.point = latLng;
         mapItem.key = key;
 
         ImageView imageView = new ImageView(getContext(), null);
@@ -66,7 +66,7 @@ public class MapRootView extends RelativeLayout {
         addView(imageView);
 
         imageView.getLayoutParams().width = 100;
-        imageView.getLayoutParams().height = (int)(imageView.getLayoutParams().width * 1.5);
+        imageView.getLayoutParams().height = (int) (imageView.getLayoutParams().width * 1.5);
 
         doAnimation(0, 50, imageView);
 
@@ -82,17 +82,17 @@ public class MapRootView extends RelativeLayout {
         });
     }
 
-    public void onCameraChange(GoogleMap map, CameraPosition position, Projection projection){
+    public void onCameraChange(GoogleMap map, CameraPosition position, Projection projection) {
         VisibleRegion visibleRegion = projection.getVisibleRegion();
-        for(MapItem item : items){
-            if(!visibleRegion.latLngBounds.contains(item.point)){
+        for (MapItem item : items) {
+            if (!visibleRegion.latLngBounds.contains(item.point)) {
                 item.view.setVisibility(View.INVISIBLE);
-            }else{
+            } else {
 
                 Point point = projection.toScreenLocation(item.point);
 
-                ((LayoutParams)item.view.getLayoutParams()).leftMargin= point.x - item.view.getWidth();
-                ((LayoutParams)item.view.getLayoutParams()).topMargin= point.y - item.view.getHeight();
+                ((LayoutParams) item.view.getLayoutParams()).leftMargin = point.x - item.view.getWidth();
+                ((LayoutParams) item.view.getLayoutParams()).topMargin = point.y - item.view.getHeight();
                 item.view.requestLayout();
 
                 item.view.setVisibility(View.VISIBLE);

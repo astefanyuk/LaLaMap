@@ -50,7 +50,7 @@ public class YoutubePlayer extends RelativeLayout {
 
     }
 
-    public void load(){
+    public void load() {
         /*
 
         String youtubeId = "aq8RQtERJVo";

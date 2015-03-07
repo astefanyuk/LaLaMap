@@ -9,6 +9,8 @@
         android:layout_height="match_parent" />
 
     <com.mariko.lalamap.MapRootView
-        android:id="@+id/mapRootView" android:layout_width="match_parent" android:layout_height="match_parent"/>
+        android:id="@+id/mapRootView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </RelativeLayout>
