@@ -44,11 +44,19 @@ public class MapRootView extends RelativeLayout {
 
         doAnimation(10, 50, kit);
 
+        MapItem mapItem;
+
         addData(new LatLng(48.8582, 2.2945), getResources().getDrawable(R.drawable.tower), "ZV9u5bPRSfo");
         addData(new LatLng(-1.082650, 23.049303), getResources().getDrawable(R.drawable.tiger), "wDkZEUGRzMQ");
+
+        mapItem = addData(new LatLng(-33.723660, 46.968236), getResources().getDrawable(R.drawable.afrika), "wDkZEUGRzMQ");
+        mapItem.view.getLayoutParams().width = 400;
+        mapItem.view.getLayoutParams().height = 800;
+
+
     }
 
-    private void addData(LatLng latLng, Drawable drawable, String key) {
+    private MapItem addData(LatLng latLng, Drawable drawable, String key) {
 
         final MapItem mapItem = new MapItem();
         mapItem.image = drawable;
@@ -80,6 +88,8 @@ public class MapRootView extends RelativeLayout {
 
             }
         });
+
+        return mapItem;
     }
 
     public void onCameraChange(GoogleMap map, CameraPosition position, Projection projection) {
