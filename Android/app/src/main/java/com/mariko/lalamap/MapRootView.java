@@ -6,13 +6,17 @@ import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
+import android.widget.FrameLayout;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.Projection;
@@ -25,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class MapRootView extends RelativeLayout {
+public class MapRootView extends FrameLayout {
 
     ImageView airplane;
     ImageView kit;
@@ -46,25 +50,22 @@ public class MapRootView extends RelativeLayout {
 
         MapItem mapItem;
 
-        addData(new LatLng(48.8582, 2.2945), getResources().getDrawable(R.drawable.tower), "ZV9u5bPRSfo");
-        addData(new LatLng(-1.082650, 23.049303), getResources().getDrawable(R.drawable.tiger), "wDkZEUGRzMQ");
+        addData(new LatLng(48.8582, 2.2945), null, getResources().getDrawable(R.drawable.tower), "ZV9u5bPRSfo");
+        addData(new LatLng(-1.082650, 23.049303), null, getResources().getDrawable(R.drawable.tiger), "wDkZEUGRzMQ");
 
-        mapItem = addData(new LatLng(-33.723660, 46.968236), getResources().getDrawable(R.drawable.afrika), "wDkZEUGRzMQ");
-        mapItem.view.getLayoutParams().width = 400;
-        mapItem.view.getLayoutParams().height = 800;
-
-
+        mapItem = addData(new LatLng(40.439974, -20.402344), new LatLng(-37.597042, 53.0), getResources().getDrawable(R.drawable.afrika), "wDkZEUGRzMQ");
     }
 
-    private MapItem addData(LatLng latLng, Drawable drawable, String key) {
+    private MapItem addData(LatLng latLngLeftTop, LatLng latLngRightBottom, Drawable drawable, String key) {
 
         final MapItem mapItem = new MapItem();
         mapItem.image = drawable;
-        mapItem.point = latLng;
+        mapItem.pointLeftTop = latLngLeftTop;
+        mapItem.pointRightBottom = latLngRightBottom;
         mapItem.key = key;
 
-        ImageView imageView = new ImageView(getContext(), null);
-        imageView.setImageDrawable(mapItem.image);
+        View imageView = new View(getContext(), null);
+        imageView.setBackgroundDrawable(mapItem.image);
         mapItem.view = imageView;
 
         imageView.setVisibility(View.GONE);
@@ -73,8 +74,11 @@ public class MapRootView extends RelativeLayout {
 
         addView(imageView);
 
-        imageView.getLayoutParams().width = 100;
-        imageView.getLayoutParams().height = (int) (imageView.getLayoutParams().width * 1.5);
+        int width  = 100;
+
+        imageView.getLayoutParams().width = width;
+        imageView.getLayoutParams().height = (int) (drawable.getIntrinsicHeight() * width * 1.0f / drawable.getIntrinsicWidth());
+
 
         doAnimation(0, 50, imageView);
 
@@ -94,19 +98,55 @@ public class MapRootView extends RelativeLayout {
 
     public void onCameraChange(GoogleMap map, CameraPosition position, Projection projection) {
         VisibleRegion visibleRegion = projection.getVisibleRegion();
+
+        RectF rect = new RectF(0, 0, getWidth(), getHeight());
+
         for (MapItem item : items) {
-            if (!visibleRegion.latLngBounds.contains(item.point)) {
-                item.view.setVisibility(View.INVISIBLE);
-            } else {
 
-                Point point = projection.toScreenLocation(item.point);
+            Point point = item.pointLeftTop == null ? null : projection.toScreenLocation(item.pointLeftTop);
+            Point pointRightBottom = item.pointRightBottom == null ? null : projection.toScreenLocation(item.pointRightBottom);
 
-                ((LayoutParams) item.view.getLayoutParams()).leftMargin = point.x - item.view.getWidth();
-                ((LayoutParams) item.view.getLayoutParams()).topMargin = point.y - item.view.getHeight();
+            item.view.setVisibility(View.INVISIBLE);
+
+            if(point == null && pointRightBottom == null){
+                continue;
+            }
+
+            RectF rectPoint = new RectF();
+            if(point != null && pointRightBottom != null){
+                rectPoint.left = point.x;
+                rectPoint.top = point.y;
+
+                rectPoint.right = pointRightBottom.x;
+                rectPoint.bottom = pointRightBottom.y;
+            }else{
+                Point p = point != null ? point : pointRightBottom;
+
+                rectPoint.left = p.x;
+                rectPoint.top = p.y;
+
+                rectPoint.right = p.x;
+                rectPoint.bottom = p.y;
+
+            }
+
+            if(rect.intersects(rectPoint.left, rectPoint.top, rectPoint.right, rectPoint.bottom)){
+
+                if(item.pointLeftTop != null && item.pointRightBottom != null){
+
+                    ((LayoutParams) item.view.getLayoutParams()).leftMargin = (int)(rectPoint.left);
+                    ((LayoutParams) item.view.getLayoutParams()).topMargin = (int)(rectPoint.top);
+                    ((LayoutParams) item.view.getLayoutParams()).width  = (int)rectPoint.width();
+                    ((LayoutParams) item.view.getLayoutParams()).height  = (int)rectPoint.height();
+                }else{
+                    ((LayoutParams) item.view.getLayoutParams()).leftMargin = (int)(rectPoint.left - item.view.getWidth());
+                    ((LayoutParams) item.view.getLayoutParams()).topMargin = (int)(rectPoint.top - item.view.getHeight());
+                }
+
                 item.view.requestLayout();
-
                 item.view.setVisibility(View.VISIBLE);
             }
+
         }
     }
 

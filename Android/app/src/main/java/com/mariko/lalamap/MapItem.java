@@ -9,7 +9,8 @@ import com.google.android.gms.maps.model.LatLng;
  * Created by AStefaniuk on 06.03.2015.
  */
 public class MapItem {
-    public LatLng point;
+    public LatLng pointLeftTop;
+    public LatLng pointRightBottom;
     public Drawable image;
     public String key;
     public String youtubeKey;

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -11,6 +12,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.youtube.player.YouTubeStandalonePlayer;
 
 import java.util.Timer;
+import java.util.TimerTask;
 
 public class MapsActivity extends FragmentActivity {
 
@@ -26,7 +28,8 @@ public class MapsActivity extends FragmentActivity {
         mapRootView = (MapRootView) findViewById(R.id.mapRootView);
         setUpMapIfNeeded();
 
-/*
+
+        /*
         timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
@@ -40,7 +43,6 @@ public class MapsActivity extends FragmentActivity {
             }
         }, 0, 2000);
         */
-
 
     }
 
