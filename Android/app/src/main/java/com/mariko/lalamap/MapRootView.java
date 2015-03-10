@@ -51,23 +51,25 @@ public class MapRootView extends RelativeLayout {
 
         MapItem mapItem;
 
-        addData(new LatLng(48.8582, 2.2945), null, getResources().getDrawable(R.drawable.tower), "ZV9u5bPRSfo");
-        addData(new LatLng(-1.082650, 23.049303), null, getResources().getDrawable(R.drawable.tiger), "wDkZEUGRzMQ");
+        addData(new LatLng(48.8582, 2.2945), null, getResources().getDrawable(R.drawable.tower), "ZV9u5bPRSfo", MapItem.LocationType.Point);
+        addData(new LatLng(-1.082650, 23.049303), null, getResources().getDrawable(R.drawable.tiger), "wDkZEUGRzMQ", MapItem.LocationType.Point);
 
-        mapItem = addData(new LatLng(40.439974, -20.402344), new LatLng(-37.597042, 53.0), getResources().getDrawable(R.drawable.afrika), "wDkZEUGRzMQ");
+        mapItem = addData(new LatLng(40.439974, -20.402344), new LatLng(-37.597042, 53.0), getResources().getDrawable(R.drawable.afrika), "wDkZEUGRzMQ", MapItem.LocationType.Area);
     }
 
     public void showMapItems(boolean show){
         mapItemsView.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
     }
 
-    private MapItem addData(LatLng latLngLeftTop, LatLng latLngRightBottom, Drawable drawable, String key) {
+    private MapItem addData(LatLng latLngLeftTop, LatLng latLngRightBottom, Drawable drawable, String youtubeKey, MapItem.LocationType locationType) {
 
         final MapItem mapItem = new MapItem();
+
+        mapItem.locationType = locationType;
         mapItem.image = drawable;
         mapItem.pointLeftTop = latLngLeftTop;
         mapItem.pointRightBottom = latLngRightBottom;
-        mapItem.key = key;
+        mapItem.youtubeKey = youtubeKey;
 
         View imageView = new View(getContext(), null);
         imageView.setBackgroundDrawable(mapItem.image);
@@ -147,6 +149,7 @@ public class MapRootView extends RelativeLayout {
                 rectPoint.right = pointRightBottom.x;
                 rectPoint.bottom = pointRightBottom.y;
             }else{
+
                 Point p = point != null ? point : pointRightBottom;
 
                 rectPoint.left = p.x;

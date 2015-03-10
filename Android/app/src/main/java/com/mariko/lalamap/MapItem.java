@@ -15,4 +15,11 @@ public class MapItem {
     public String key;
     public String youtubeKey;
     public View view;
+    public LocationType locationType;
+
+    public static enum LocationType{
+        Point /*Like Marker*/,
+        Rect /* Fill all Rect*/,
+        Area /* Contains in Rect*/
+    }
 }
