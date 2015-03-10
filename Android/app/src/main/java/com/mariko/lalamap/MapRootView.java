@@ -6,17 +6,16 @@ import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.Point;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.Projection;
@@ -29,24 +28,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class MapRootView extends FrameLayout {
+public class MapRootView extends RelativeLayout {
 
     ImageView airplane;
-    ImageView kit;
+
+    private ViewGroup mapItemsView;
 
     private List<MapItem> items = new ArrayList<MapItem>();
+
+    private AnimatorSet rootAnimationSet = new AnimatorSet();
 
     public MapRootView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         LayoutInflater.from(context).inflate(R.layout.map_root, this);
 
+        mapItemsView = (ViewGroup) findViewById(R.id.mapItemsView);
+
         airplane = (ImageView) findViewById(R.id.airplane);
-        kit = (ImageView) findViewById(R.id.kit);
 
         doAnimation(0, 200, airplane);
-
-        doAnimation(10, 50, kit);
 
         MapItem mapItem;
 
@@ -54,6 +55,10 @@ public class MapRootView extends FrameLayout {
         addData(new LatLng(-1.082650, 23.049303), null, getResources().getDrawable(R.drawable.tiger), "wDkZEUGRzMQ");
 
         mapItem = addData(new LatLng(40.439974, -20.402344), new LatLng(-37.597042, 53.0), getResources().getDrawable(R.drawable.afrika), "wDkZEUGRzMQ");
+    }
+
+    public void showMapItems(boolean show){
+        mapItemsView.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
     }
 
     private MapItem addData(LatLng latLngLeftTop, LatLng latLngRightBottom, Drawable drawable, String key) {
@@ -72,7 +77,7 @@ public class MapRootView extends FrameLayout {
 
         items.add(mapItem);
 
-        addView(imageView);
+        mapItemsView.addView(imageView);
 
         int width  = 100;
 
@@ -82,6 +87,7 @@ public class MapRootView extends FrameLayout {
 
         doAnimation(0, 50, imageView);
 
+        /*
         imageView.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -92,11 +98,32 @@ public class MapRootView extends FrameLayout {
 
             }
         });
+        */
 
         return mapItem;
     }
 
+    public void onCameraMove(int x, int y){
+
+        rootAnimationSet.cancel();
+        setTranslationX(0);
+
+        rootAnimationSet = new AnimatorSet();
+
+        ObjectAnimator translationY = ObjectAnimator.ofFloat(this, "translationX", getTranslationX(), getTranslationX() + x);
+        rootAnimationSet.play(translationY);
+        rootAnimationSet.setDuration(1000);
+        rootAnimationSet.start();
+    }
+
     public void onCameraChange(GoogleMap map, CameraPosition position, Projection projection) {
+
+        showMapItems(true);
+
+
+        rootAnimationSet.cancel();
+        setTranslationX(0);
+
         VisibleRegion visibleRegion = projection.getVisibleRegion();
 
         RectF rect = new RectF(0, 0, getWidth(), getHeight());
@@ -132,15 +159,17 @@ public class MapRootView extends FrameLayout {
 
             if(rect.intersects(rectPoint.left, rectPoint.top, rectPoint.right, rectPoint.bottom)){
 
+                FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) item.view.getLayoutParams();
+
                 if(item.pointLeftTop != null && item.pointRightBottom != null){
 
-                    ((LayoutParams) item.view.getLayoutParams()).leftMargin = (int)(rectPoint.left);
-                    ((LayoutParams) item.view.getLayoutParams()).topMargin = (int)(rectPoint.top);
-                    ((LayoutParams) item.view.getLayoutParams()).width  = (int)rectPoint.width();
-                    ((LayoutParams) item.view.getLayoutParams()).height  = (int)rectPoint.height();
+                    layoutParams.leftMargin = (int)(rectPoint.left);
+                    layoutParams.topMargin = (int)(rectPoint.top);
+                    layoutParams.width  = (int)rectPoint.width();
+                    layoutParams.height  = (int)rectPoint.height();
                 }else{
-                    ((LayoutParams) item.view.getLayoutParams()).leftMargin = (int)(rectPoint.left - item.view.getWidth());
-                    ((LayoutParams) item.view.getLayoutParams()).topMargin = (int)(rectPoint.top - item.view.getHeight());
+                    layoutParams.leftMargin = (int)(rectPoint.left - item.view.getWidth());
+                    layoutParams.topMargin = (int)(rectPoint.top - item.view.getHeight());
                 }
 
                 item.view.requestLayout();
