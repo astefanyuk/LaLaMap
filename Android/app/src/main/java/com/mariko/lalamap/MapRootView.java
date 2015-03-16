@@ -3,12 +3,9 @@ package com.mariko.lalamap;
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Point;
 import android.graphics.RectF;
-import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +19,6 @@ import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.VisibleRegion;
-import com.google.android.youtube.player.YouTubeStandalonePlayer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,47 +43,55 @@ public class MapRootView extends RelativeLayout {
 
         airplane = (ImageView) findViewById(R.id.airplane);
 
-        doAnimation(0, 200, airplane);
+        doAnimationVertical(0, 200, airplane);
 
         MapItem mapItem;
 
-        addData(new LatLng(48.8582, 2.2945), null, getResources().getDrawable(R.drawable.tower), "ZV9u5bPRSfo", MapItem.LocationType.Point);
-        addData(new LatLng(-1.082650, 23.049303), null, getResources().getDrawable(R.drawable.tiger), "wDkZEUGRzMQ", MapItem.LocationType.Point);
+        /*
+        addData(new MapItem(new LatLng(48.8582, 2.2945), null, getResources().getDrawable(R.drawable.tower), MapItem.LocationType.Marker, 100), "ZV9u5bPRSfo");
+        addData(new MapItem(new LatLng(-1.082650, 23.049303), null, getResources().getDrawable(R.drawable.tiger), MapItem.LocationType.Marker, 100), "wDkZEUGRzMQ");
 
-        mapItem = addData(new LatLng(40.439974, -20.402344), new LatLng(-37.597042, 53.0), getResources().getDrawable(R.drawable.afrika), "wDkZEUGRzMQ", MapItem.LocationType.Area);
+        mapItem = addData(new MapItem(new LatLng(40.439974, -20.402344), new LatLng(-37.597042, 53.0), getResources().getDrawable(R.drawable.afrika), MapItem.LocationType.FillRect, 100), "wDkZEUGRzMQ");
+
+        mapItem = addData(new MapItem(new LatLng(-38.209739, 31.206592), new LatLng(-52.003176, 101.519094), getResources().getDrawable(R.drawable.kit), MapItem.LocationType.Area, 100), "wDkZEUGRzMQ");
+         */
+        mapItem = addData(new MapItem(new LatLng(-73.610217, -7.992628), new LatLng(-83.860957, 151.440969), getResources().getDrawable(R.drawable.pingvin), MapItem.LocationType.Area, 100), "wDkZEUGRzMQ");
+
     }
 
     public void showMapItems(boolean show){
         mapItemsView.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
     }
 
-    private MapItem addData(LatLng latLngLeftTop, LatLng latLngRightBottom, Drawable drawable, String youtubeKey, MapItem.LocationType locationType) {
+    private MapItem addData(MapItem mapItem, String youtubeKey) {
 
-        final MapItem mapItem = new MapItem();
-
-        mapItem.locationType = locationType;
-        mapItem.image = drawable;
-        mapItem.pointLeftTop = latLngLeftTop;
-        mapItem.pointRightBottom = latLngRightBottom;
         mapItem.youtubeKey = youtubeKey;
 
-        View imageView = new View(getContext(), null);
-        imageView.setBackgroundDrawable(mapItem.image);
-        mapItem.view = imageView;
+        mapItem.view =  new View(getContext(), null);
+        mapItem.view.setBackgroundDrawable(mapItem.drawable);
 
-        imageView.setVisibility(View.GONE);
+        mapItem.view.setVisibility(View.GONE);
+
+        if(mapItem.locationType.equals(MapItem.LocationType.Area)){
+            FrameLayout parentLayout = new FrameLayout(getContext(), null);
+            parentLayout.addView(mapItem.view);
+            mapItemsView.addView(parentLayout);
+        }else{
+            mapItemsView.addView(mapItem.view);
+        }
 
         items.add(mapItem);
 
-        mapItemsView.addView(imageView);
 
-        int width  = 100;
+        mapItem.view.getLayoutParams().width = mapItem.width;
+        mapItem.view.getLayoutParams().height = mapItem.height;
 
-        imageView.getLayoutParams().width = width;
-        imageView.getLayoutParams().height = (int) (drawable.getIntrinsicHeight() * width * 1.0f / drawable.getIntrinsicWidth());
+        if(mapItem.locationType.equals(MapItem.LocationType.Area)){
+            doAnimationHorizontal(0, 300, mapItem.view, 10000);
+        }else{
+            doAnimationVertical(0, 50, mapItem.view);
+        }
 
-
-        doAnimation(0, 50, imageView);
 
         /*
         imageView.setOnClickListener(new OnClickListener() {
@@ -162,32 +166,78 @@ public class MapRootView extends RelativeLayout {
 
             if(rect.intersects(rectPoint.left, rectPoint.top, rectPoint.right, rectPoint.bottom)){
 
-                FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) item.view.getLayoutParams();
+                if(item.locationType.equals(MapItem.LocationType.Marker) || item.locationType.equals(MapItem.LocationType.FillRect)){
 
-                if(item.pointLeftTop != null && item.pointRightBottom != null){
+                    FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) item.view.getLayoutParams();
+
+                    if(item.pointLeftTop != null && item.pointRightBottom != null){
+
+                        layoutParams.leftMargin = (int)(rectPoint.left);
+                        layoutParams.topMargin = (int)(rectPoint.top);
+                        layoutParams.width  = (int)rectPoint.width();
+                        layoutParams.height  = (int)rectPoint.height();
+                    }else{
+                        layoutParams.leftMargin = (int)(rectPoint.left - item.view.getWidth());
+                        layoutParams.topMargin = (int)(rectPoint.top - item.view.getHeight());
+                    }
+
+                    item.view.requestLayout();
+
+                }else if(item.locationType.equals(MapItem.LocationType.Area)){
+
+                    FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) ((ViewGroup)item.view.getParent()).getLayoutParams();
 
                     layoutParams.leftMargin = (int)(rectPoint.left);
                     layoutParams.topMargin = (int)(rectPoint.top);
                     layoutParams.width  = (int)rectPoint.width();
                     layoutParams.height  = (int)rectPoint.height();
-                }else{
-                    layoutParams.leftMargin = (int)(rectPoint.left - item.view.getWidth());
-                    layoutParams.topMargin = (int)(rectPoint.top - item.view.getHeight());
+
+                    item.view.getParent().requestLayout();
                 }
 
-                item.view.requestLayout();
                 item.view.setVisibility(View.VISIBLE);
             }
 
         }
     }
 
-    private void doAnimation(final int x, final int y, final View view) {
+    private void doAnimationVertical(final int y1, final int y2, final View view) {
         final AnimatorSet set = new AnimatorSet();
-        ObjectAnimator translationY = ObjectAnimator.ofFloat(view, "translationY", y, x);
-        ObjectAnimator translationY2 = ObjectAnimator.ofFloat(view, "translationY", x, y);
+        ObjectAnimator translationY = ObjectAnimator.ofFloat(view, "translationY", y2, y1);
+        ObjectAnimator translationY2 = ObjectAnimator.ofFloat(view, "translationY", y1, y2);
         set.play(translationY2).after(translationY);
         set.setDuration(5000);
+        set.start();
+
+        set.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                set.start();
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
+    }
+
+    private void doAnimationHorizontal(final int x1, final int x2, final View view, long duration) {
+        final AnimatorSet set = new AnimatorSet();
+        ObjectAnimator translationY = ObjectAnimator.ofFloat(view, "translationX", x2, x1);
+        ObjectAnimator translationY2 = ObjectAnimator.ofFloat(view, "translationX", x1, x2);
+        set.play(translationY2).after(translationY);
+        set.setDuration(duration);
         set.start();
 
         set.addListener(new Animator.AnimatorListener() {

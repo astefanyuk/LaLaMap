@@ -26,6 +26,7 @@ public class MapsActivity extends Activity {
         mapRootView = (MapRootView) findViewById(R.id.mapRootView);
         setUpMapIfNeeded();
 
+        /*
         timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
@@ -40,7 +41,7 @@ public class MapsActivity extends Activity {
                 });
             }
         }, 0, 2000);
-
+        */
 
     }
 
