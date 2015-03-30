@@ -1,16 +1,12 @@
 package com.mariko.map;
 
 import android.os.Bundle;
-import android.util.Log;
-import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 
 public class MapFragmentEx extends MapFragment {
@@ -37,14 +33,17 @@ public class MapFragmentEx extends MapFragment {
             @Override
             public boolean dispatchTouchEvent(MotionEvent event) {
 
+                if (onTouchListener != null) {
 
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        onTouchListener.onTouch();
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        onTouchListener.onRelease();
-                        break;
+                    switch (event.getAction()) {
+                        case MotionEvent.ACTION_DOWN:
+                            onTouchListener.onTouch();
+                            break;
+                        case MotionEvent.ACTION_UP:
+                            onTouchListener.onRelease();
+                            break;
+                    }
+
                 }
 
                 return super.dispatchTouchEvent(event);

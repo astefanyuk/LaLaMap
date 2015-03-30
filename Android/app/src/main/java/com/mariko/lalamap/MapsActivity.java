@@ -3,14 +3,13 @@ package com.mariko.lalamap;
 import android.app.Activity;
 import android.os.Bundle;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.mariko.map.MapFragmentEx;
 import com.mariko.map.MapStateListener;
 
 import java.util.Timer;
-import java.util.TimerTask;
 
 public class MapsActivity extends Activity {
 
@@ -55,12 +54,19 @@ public class MapsActivity extends Activity {
 
         if (mMap == null) {
 
-            MapFragmentEx touchableMapFragment = (MapFragmentEx) (getFragmentManager().findFragmentById(R.id.map));
-            mMap = touchableMapFragment.getMap();
+            MapFragmentEx mapFragment = (MapFragmentEx) (getFragmentManager().findFragmentById(R.id.map));
+            mMap = mapFragment.getMap();
 
             if (mMap != null) {
 
-                new MapStateListener(touchableMapFragment, this) {
+                mapFragment.getMapAsync(new OnMapReadyCallback() {
+                    @Override
+                    public void onMapReady(GoogleMap googleMap) {
+                        mapRootView.start();
+                    }
+                });
+
+                new MapStateListener(mapFragment, this) {
                     @Override
                     public void onMapTouched() {
                         mapRootView.showMapItems(false);

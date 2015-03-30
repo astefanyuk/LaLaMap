@@ -10,8 +10,8 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -42,21 +42,29 @@ public class MapRootView extends RelativeLayout {
         mapItemsView = (ViewGroup) findViewById(R.id.mapItemsView);
 
         airplane = (ImageView) findViewById(R.id.airplane);
+        airplane.setVisibility(View.INVISIBLE);
 
         doAnimationVertical(0, 200, airplane);
 
         MapItem mapItem;
 
-        /*
+
         addData(new MapItem(new LatLng(48.8582, 2.2945), null, getResources().getDrawable(R.drawable.tower), MapItem.LocationType.Marker, 100), "ZV9u5bPRSfo");
         addData(new MapItem(new LatLng(-1.082650, 23.049303), null, getResources().getDrawable(R.drawable.tiger), MapItem.LocationType.Marker, 100), "wDkZEUGRzMQ");
 
         mapItem = addData(new MapItem(new LatLng(40.439974, -20.402344), new LatLng(-37.597042, 53.0), getResources().getDrawable(R.drawable.afrika), MapItem.LocationType.FillRect, 100), "wDkZEUGRzMQ");
 
         mapItem = addData(new MapItem(new LatLng(-38.209739, 31.206592), new LatLng(-52.003176, 101.519094), getResources().getDrawable(R.drawable.kit), MapItem.LocationType.Area, 100), "wDkZEUGRzMQ");
-         */
-        mapItem = addData(new MapItem(new LatLng(-73.610217, -7.992628), new LatLng(-83.860957, 151.440969), getResources().getDrawable(R.drawable.pingvin), MapItem.LocationType.Area, 100), "wDkZEUGRzMQ");
 
+        //mapItem = addData(new MapItem(new LatLng(-73.610217, -7.992628), new LatLng(-83.860957, 151.440969), getResources().getDrawable(R.drawable.pingvin), MapItem.LocationType.Area, 100), "wDkZEUGRzMQ");
+
+        showMapItems(false);
+
+    }
+
+    public void start() {
+        airplane.setVisibility(View.VISIBLE);
+        showMapItems(true);
     }
 
     public void showMapItems(boolean show){
