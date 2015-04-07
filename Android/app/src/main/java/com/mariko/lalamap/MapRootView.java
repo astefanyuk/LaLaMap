@@ -10,6 +10,9 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.Interpolator;
+import android.view.animation.Transformation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -19,6 +22,9 @@ import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.VisibleRegion;
+import com.mariko.animation.AnimatorPath;
+import com.mariko.animation.PathEvaluator;
+import com.mariko.animation.PathPoint;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,15 +40,20 @@ public class MapRootView extends RelativeLayout {
 
     private AnimatorSet rootAnimationSet = new AnimatorSet();
 
+    private View kit;
+
     public MapRootView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         LayoutInflater.from(context).inflate(R.layout.map_root, this);
 
+        kit = findViewById(R.id.kit);
+
         mapItemsView = (ViewGroup) findViewById(R.id.mapItemsView);
 
         airplane = (ImageView) findViewById(R.id.airplane);
         airplane.setVisibility(View.INVISIBLE);
+
 
         doAnimationVertical(0, 200, airplane);
 
@@ -60,6 +71,71 @@ public class MapRootView extends RelativeLayout {
 
         showMapItems(false);
 
+        aaa();
+
+    }
+
+    private void aaa(){
+        // Set up the path we're animating along
+        AnimatorPath path = new AnimatorPath();
+        path.moveTo(0, 0);
+        path.curveTo(100, 0, 300, 900, 400, 500);
+
+        // Set up the animation
+        final ObjectAnimator anim = ObjectAnimator.ofObject(this, "buttonLoc",
+                new PathEvaluator(), path.getPoints().toArray());
+
+
+        final AnimatorSet set = new AnimatorSet();
+        set.play(anim);
+        set.setDuration(10000);
+
+        set.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                anim.start();
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
+
+
+        set.start();
+    }
+
+    public void setButtonLoc(PathPoint newLoc) {
+        kit.setTranslationX(newLoc.mX);
+        kit.setTranslationY(newLoc.mY);
+    }
+
+    private void animatePlain(){
+        Animation animation = new Animation() {
+            @Override
+            protected void applyTransformation(float interpolatedTime, Transformation t) {
+                super.applyTransformation(interpolatedTime, t);
+                airplane.setAlpha(interpolatedTime);
+            }
+        };
+
+//define the CubicBezierInterpolator
+        Interpolator easeInOut = new CubicBezierInterpolator(.1, .7, .1, 1);
+        animation.setInterpolator(easeInOut);
+
+        animation.setDuration(3000);
+        airplane.startAnimation(animation);
     }
 
     public void start() {
