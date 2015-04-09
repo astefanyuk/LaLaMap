@@ -65,21 +65,26 @@ public class MapRootView extends RelativeLayout {
 
         mapItem = addData(new MapItem(new LatLng(40.439974, -20.402344), new LatLng(-37.597042, 53.0), getResources().getDrawable(R.drawable.afrika), MapItem.LocationType.FillRect, 100), "wDkZEUGRzMQ");
 
-        mapItem = addData(new MapItem(new LatLng(-38.209739, 31.206592), new LatLng(-52.003176, 101.519094), getResources().getDrawable(R.drawable.kit), MapItem.LocationType.Area, 100), "wDkZEUGRzMQ");
+        //mapItem = addData(new MapItem(new LatLng(-38.209739, 31.206592), new LatLng(-52.003176, 101.519094), getResources().getDrawable(R.drawable.kit), MapItem.LocationType.Area, 100), "wDkZEUGRzMQ");
 
         //mapItem = addData(new MapItem(new LatLng(-73.610217, -7.992628), new LatLng(-83.860957, 151.440969), getResources().getDrawable(R.drawable.pingvin), MapItem.LocationType.Area, 100), "wDkZEUGRzMQ");
 
         showMapItems(false);
 
-        aaa();
+        aaa(0, 0);
 
     }
 
-    private void aaa(){
+    private void aaa(final int x, final int y) {
         // Set up the path we're animating along
         AnimatorPath path = new AnimatorPath();
-        path.moveTo(0, 0);
-        path.curveTo(100, 0, 300, 900, 400, 500);
+        path.moveTo(x, y);
+        path.curveTo(x + 100, 100, x + 200, 200, x + 300, 100);
+        //path.lineTo(300,100);
+        //path.curveTo(300, 90, 600, 100, 700, 200);
+
+        //path.curveTo(100, 0, 300, 900, 400, 500);
+        //path.curveTo(500, 400, 400, 400, 300, 100);
 
         // Set up the animation
         final ObjectAnimator anim = ObjectAnimator.ofObject(this, "buttonLoc",
@@ -98,7 +103,7 @@ public class MapRootView extends RelativeLayout {
 
             @Override
             public void onAnimationEnd(Animator animation) {
-                anim.start();
+                aaa(x + 300, 100);
             }
 
             @Override
@@ -116,9 +121,27 @@ public class MapRootView extends RelativeLayout {
         set.start();
     }
 
+    private boolean incr;
+
     public void setButtonLoc(PathPoint newLoc) {
         kit.setTranslationX(newLoc.mX);
         kit.setTranslationY(newLoc.mY);
+
+        int min = -15;
+        int max = 15;
+        float rotation = kit.getRotation();
+
+        if (incr) {
+            rotation += 0.1;
+        } else {
+            rotation -= 0.1;
+        }
+
+        if (rotation >= max || rotation <= min) {
+            incr = !incr;
+        }
+
+        kit.setRotation(rotation);
     }
 
     private void animatePlain(){
@@ -151,30 +174,20 @@ public class MapRootView extends RelativeLayout {
 
         mapItem.youtubeKey = youtubeKey;
 
-        mapItem.view =  new View(getContext(), null);
-        mapItem.view.setBackgroundDrawable(mapItem.drawable);
-
-        mapItem.view.setVisibility(View.GONE);
-
-        if(mapItem.locationType.equals(MapItem.LocationType.Area)){
-            FrameLayout parentLayout = new FrameLayout(getContext(), null);
-            parentLayout.addView(mapItem.view);
-            mapItemsView.addView(parentLayout);
-        }else{
-            mapItemsView.addView(mapItem.view);
-        }
+        MapItemView view = new MapItemView(getContext(), null);
+        view.setVisibility(View.GONE);
+        mapItemsView.addView(view);
+        view.setMapItem(mapItem);
 
         items.add(mapItem);
 
-
-        mapItem.view.getLayoutParams().width = mapItem.width;
-        mapItem.view.getLayoutParams().height = mapItem.height;
-
+        /*
         if(mapItem.locationType.equals(MapItem.LocationType.Area)){
             doAnimationHorizontal(0, 300, mapItem.view, 10000);
         }else{
             doAnimationVertical(0, 50, mapItem.view);
         }
+        */
 
 
         /*
@@ -261,15 +274,15 @@ public class MapRootView extends RelativeLayout {
                         layoutParams.width  = (int)rectPoint.width();
                         layoutParams.height  = (int)rectPoint.height();
                     }else{
-                        layoutParams.leftMargin = (int)(rectPoint.left - item.view.getWidth());
-                        layoutParams.topMargin = (int)(rectPoint.top - item.view.getHeight());
+                        layoutParams.leftMargin = (int) (rectPoint.left - item.width);
+                        layoutParams.topMargin = (int) (rectPoint.top - item.height);
                     }
 
                     item.view.requestLayout();
 
                 }else if(item.locationType.equals(MapItem.LocationType.Area)){
 
-                    FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) ((ViewGroup)item.view.getParent()).getLayoutParams();
+                    RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) ((ViewGroup) item.view.getParent()).getLayoutParams();
 
                     layoutParams.leftMargin = (int)(rectPoint.left);
                     layoutParams.topMargin = (int)(rectPoint.top);
