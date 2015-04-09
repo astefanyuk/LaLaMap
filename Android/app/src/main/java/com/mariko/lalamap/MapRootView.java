@@ -10,10 +10,6 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.Interpolator;
-import android.view.animation.Transformation;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
@@ -22,9 +18,6 @@ import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.VisibleRegion;
-import com.mariko.animation.AnimatorPath;
-import com.mariko.animation.PathEvaluator;
-import com.mariko.animation.PathPoint;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,7 +67,7 @@ public class MapRootView extends RelativeLayout {
         showMapItems(true);
     }
 
-    public void showMapItems(boolean show){
+    public void showMapItems(boolean show) {
         mapItemsView.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
     }
 
@@ -82,7 +75,12 @@ public class MapRootView extends RelativeLayout {
 
         mapItem.youtubeKey = youtubeKey;
 
-        MapItemView view = new MapItemView(getContext(), null);
+        MapItemView view;
+        if (mapItem.locationType.equals(MapItem.LocationType.Area)) {
+            view = new MapItemViewArea(getContext(), null);
+        } else {
+            view = new MapItemView(getContext(), null);
+        }
         view.setVisibility(View.GONE);
         mapItemsView.addView(view);
         view.setMapItem(mapItem);
@@ -114,7 +112,7 @@ public class MapRootView extends RelativeLayout {
         return mapItem;
     }
 
-    public void onCameraMove(int x, int y){
+    public void onCameraMove(int x, int y) {
 
         rootAnimationSet.cancel();
         setTranslationX(0);
@@ -123,7 +121,7 @@ public class MapRootView extends RelativeLayout {
 
         ObjectAnimator translationY = ObjectAnimator.ofFloat(this, "translationX", getTranslationX(), getTranslationX() + x);
         rootAnimationSet.play(translationY);
-        rootAnimationSet.setDuration(1000);
+        rootAnimationSet.setDuration(2000);
         rootAnimationSet.start();
     }
 
@@ -144,20 +142,19 @@ public class MapRootView extends RelativeLayout {
             Point point = item.pointLeftTop == null ? null : projection.toScreenLocation(item.pointLeftTop);
             Point pointRightBottom = item.pointRightBottom == null ? null : projection.toScreenLocation(item.pointRightBottom);
 
-            item.view.setVisibility(View.INVISIBLE);
-
-            if(point == null && pointRightBottom == null){
+            if (point == null && pointRightBottom == null) {
+                item.view.show(false);
                 continue;
             }
 
             RectF rectPoint = new RectF();
-            if(point != null && pointRightBottom != null){
+            if (point != null && pointRightBottom != null) {
                 rectPoint.left = point.x;
                 rectPoint.top = point.y;
 
                 rectPoint.right = pointRightBottom.x;
                 rectPoint.bottom = pointRightBottom.y;
-            }else{
+            } else {
 
                 Point p = point != null ? point : pointRightBottom;
 
@@ -168,22 +165,24 @@ public class MapRootView extends RelativeLayout {
                 rectPoint.bottom = p.y;
             }
 
-            if(rect.intersects(rectPoint.left, rectPoint.top, rectPoint.right, rectPoint.bottom)){
+            if (rect.intersects(rectPoint.left, rectPoint.top, rectPoint.right, rectPoint.bottom)) {
 
-                if(item.locationType.equals(MapItem.LocationType.Marker) || item.locationType.equals(MapItem.LocationType.FillRect)){
+                if (item.locationType.equals(MapItem.LocationType.Marker) || item.locationType.equals(MapItem.LocationType.FillRect)) {
 
-                    if(item.pointLeftTop != null && item.pointRightBottom != null){
+                    if (item.pointLeftTop != null && item.pointRightBottom != null) {
 
                         item.view.setPosition((int) (rectPoint.left), (int) (rectPoint.top), (int) rectPoint.width(), (int) rectPoint.height());
-                    }else{
+                    } else {
                         item.view.setPosition((int) (rectPoint.left - item.width), (int) (rectPoint.top - item.height));
                     }
 
-                }else if(item.locationType.equals(MapItem.LocationType.Area)){
+                } else if (item.locationType.equals(MapItem.LocationType.Area)) {
                     item.view.setPosition((int) (rectPoint.left), (int) (rectPoint.top), (int) rectPoint.width(), (int) rectPoint.height());
                 }
 
-                item.view.setVisibility(View.VISIBLE);
+                item.view.show(true);
+            } else {
+                item.view.show(false);
             }
 
         }

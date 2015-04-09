@@ -1,25 +1,19 @@
 package com.mariko.lalamap;
 
-import android.animation.Animator;
 import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import com.mariko.animation.AnimatorPath;
-import com.mariko.animation.PathEvaluator;
-import com.mariko.animation.PathPoint;
-
 /**
  * Created by AStefaniuk on 09.04.2015.
  */
 public class MapItemView extends FrameLayout {
     private MapItem item;
-    private View view;
-    private boolean rotateIncrease;
+    protected View view;
+    protected AnimatorSet set;
 
     public MapItemView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -48,79 +42,9 @@ public class MapItemView extends FrameLayout {
 
             this.view.setBackgroundDrawable(this.item.drawable);
             this.item.view = this;
-
-            if (item.locationType.equals(MapItem.LocationType.Area)) {
-                areaAnimation(0, 0);
-            }
         }
     }
 
-    private void areaAnimation(final int x, final int y) {
-        // Set up the path we're animating along
-        AnimatorPath path = new AnimatorPath();
-        path.moveTo(x, y);
-        path.curveTo(x + 100, 100, x + 200, 200, x + 300, 100);
-        //path.lineTo(300,100);
-        //path.curveTo(300, 90, 600, 100, 700, 200);
-
-        //path.curveTo(100, 0, 300, 900, 400, 500);
-        //path.curveTo(500, 400, 400, 400, 300, 100);
-
-        // Set up the animation
-        final ObjectAnimator anim = ObjectAnimator.ofObject(this, "BezierLocation",
-                new PathEvaluator(), path.getPoints().toArray());
-
-
-        final AnimatorSet set = new AnimatorSet();
-        set.play(anim);
-        set.setDuration(10000);
-
-        set.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                areaAnimation(x + 300, 100);
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-
-            }
-        });
-
-
-        set.start();
-    }
-
-    public void setBezierLocation(PathPoint newLoc) {
-        view.setTranslationX(newLoc.mX);
-        view.setTranslationY(newLoc.mY);
-
-        int min = -15;
-        int max = 15;
-        float rotation = view.getRotation();
-
-        if (rotateIncrease) {
-            rotation += 0.1;
-        } else {
-            rotation -= 0.1;
-        }
-
-        if (rotation >= max || rotation <= min) {
-            rotateIncrease = !rotateIncrease;
-        }
-
-        view.setRotation(rotation);
-    }
 
     public void setPosition(int left, int top, int width, int height) {
         FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) item.view.getLayoutParams();
@@ -140,5 +64,32 @@ public class MapItemView extends FrameLayout {
         layoutParams.topMargin = top;
 
         requestLayout();
+    }
+
+    protected void doAnimation() {
+
+    }
+
+    public void show(boolean show) {
+        setVisibility(show ? View.VISIBLE : View.INVISIBLE);
+
+        if (!show) {
+            if (set != null) {
+                set.cancel();
+            }
+            set = null;
+        } else {
+            if (set == null) {
+                doAnimation();
+            }
+        }
+    }
+
+    protected void cancelAnimationSet() {
+        if (set != null) {
+            set.removeAllListeners();
+            set.cancel();
+            set = null;
+        }
     }
 }
