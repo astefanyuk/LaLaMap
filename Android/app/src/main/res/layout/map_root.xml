@@ -16,10 +16,4 @@
         android:layout_width="100dip"
         android:layout_height="wrap_content" />
 
-    <ImageView
-        android:id="@+id/kit"
-        android:src="@drawable/kit"
-        android:layout_width="100dip"
-        android:layout_height="wrap_content" />
-
 </RelativeLayout>

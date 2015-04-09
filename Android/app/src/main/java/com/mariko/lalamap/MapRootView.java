@@ -40,20 +40,15 @@ public class MapRootView extends RelativeLayout {
 
     private AnimatorSet rootAnimationSet = new AnimatorSet();
 
-    private View kit;
-
     public MapRootView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         LayoutInflater.from(context).inflate(R.layout.map_root, this);
 
-        kit = findViewById(R.id.kit);
-
         mapItemsView = (ViewGroup) findViewById(R.id.mapItemsView);
 
         airplane = (ImageView) findViewById(R.id.airplane);
         airplane.setVisibility(View.INVISIBLE);
-
 
         doAnimationVertical(0, 200, airplane);
 
@@ -65,101 +60,14 @@ public class MapRootView extends RelativeLayout {
 
         mapItem = addData(new MapItem(new LatLng(40.439974, -20.402344), new LatLng(-37.597042, 53.0), getResources().getDrawable(R.drawable.afrika), MapItem.LocationType.FillRect, 100), "wDkZEUGRzMQ");
 
-        //mapItem = addData(new MapItem(new LatLng(-38.209739, 31.206592), new LatLng(-52.003176, 101.519094), getResources().getDrawable(R.drawable.kit), MapItem.LocationType.Area, 100), "wDkZEUGRzMQ");
+        mapItem = addData(new MapItem(new LatLng(-38.209739, 31.206592), new LatLng(-52.003176, 101.519094), getResources().getDrawable(R.drawable.kit), MapItem.LocationType.Area, 100), "wDkZEUGRzMQ");
 
         //mapItem = addData(new MapItem(new LatLng(-73.610217, -7.992628), new LatLng(-83.860957, 151.440969), getResources().getDrawable(R.drawable.pingvin), MapItem.LocationType.Area, 100), "wDkZEUGRzMQ");
 
         showMapItems(false);
 
-        aaa(0, 0);
-
     }
 
-    private void aaa(final int x, final int y) {
-        // Set up the path we're animating along
-        AnimatorPath path = new AnimatorPath();
-        path.moveTo(x, y);
-        path.curveTo(x + 100, 100, x + 200, 200, x + 300, 100);
-        //path.lineTo(300,100);
-        //path.curveTo(300, 90, 600, 100, 700, 200);
-
-        //path.curveTo(100, 0, 300, 900, 400, 500);
-        //path.curveTo(500, 400, 400, 400, 300, 100);
-
-        // Set up the animation
-        final ObjectAnimator anim = ObjectAnimator.ofObject(this, "buttonLoc",
-                new PathEvaluator(), path.getPoints().toArray());
-
-
-        final AnimatorSet set = new AnimatorSet();
-        set.play(anim);
-        set.setDuration(10000);
-
-        set.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                aaa(x + 300, 100);
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-
-            }
-        });
-
-
-        set.start();
-    }
-
-    private boolean incr;
-
-    public void setButtonLoc(PathPoint newLoc) {
-        kit.setTranslationX(newLoc.mX);
-        kit.setTranslationY(newLoc.mY);
-
-        int min = -15;
-        int max = 15;
-        float rotation = kit.getRotation();
-
-        if (incr) {
-            rotation += 0.1;
-        } else {
-            rotation -= 0.1;
-        }
-
-        if (rotation >= max || rotation <= min) {
-            incr = !incr;
-        }
-
-        kit.setRotation(rotation);
-    }
-
-    private void animatePlain(){
-        Animation animation = new Animation() {
-            @Override
-            protected void applyTransformation(float interpolatedTime, Transformation t) {
-                super.applyTransformation(interpolatedTime, t);
-                airplane.setAlpha(interpolatedTime);
-            }
-        };
-
-//define the CubicBezierInterpolator
-        Interpolator easeInOut = new CubicBezierInterpolator(.1, .7, .1, 1);
-        animation.setInterpolator(easeInOut);
-
-        animation.setDuration(3000);
-        airplane.startAnimation(animation);
-    }
 
     public void start() {
         airplane.setVisibility(View.VISIBLE);
@@ -258,38 +166,21 @@ public class MapRootView extends RelativeLayout {
 
                 rectPoint.right = p.x;
                 rectPoint.bottom = p.y;
-
             }
 
             if(rect.intersects(rectPoint.left, rectPoint.top, rectPoint.right, rectPoint.bottom)){
 
                 if(item.locationType.equals(MapItem.LocationType.Marker) || item.locationType.equals(MapItem.LocationType.FillRect)){
 
-                    FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) item.view.getLayoutParams();
-
                     if(item.pointLeftTop != null && item.pointRightBottom != null){
 
-                        layoutParams.leftMargin = (int)(rectPoint.left);
-                        layoutParams.topMargin = (int)(rectPoint.top);
-                        layoutParams.width  = (int)rectPoint.width();
-                        layoutParams.height  = (int)rectPoint.height();
+                        item.view.setPosition((int) (rectPoint.left), (int) (rectPoint.top), (int) rectPoint.width(), (int) rectPoint.height());
                     }else{
-                        layoutParams.leftMargin = (int) (rectPoint.left - item.width);
-                        layoutParams.topMargin = (int) (rectPoint.top - item.height);
+                        item.view.setPosition((int) (rectPoint.left - item.width), (int) (rectPoint.top - item.height));
                     }
 
-                    item.view.requestLayout();
-
                 }else if(item.locationType.equals(MapItem.LocationType.Area)){
-
-                    RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) ((ViewGroup) item.view.getParent()).getLayoutParams();
-
-                    layoutParams.leftMargin = (int)(rectPoint.left);
-                    layoutParams.topMargin = (int)(rectPoint.top);
-                    layoutParams.width  = (int)rectPoint.width();
-                    layoutParams.height  = (int)rectPoint.height();
-
-                    item.view.getParent().requestLayout();
+                    item.view.setPosition((int) (rectPoint.left), (int) (rectPoint.top), (int) rectPoint.width(), (int) rectPoint.height());
                 }
 
                 item.view.setVisibility(View.VISIBLE);

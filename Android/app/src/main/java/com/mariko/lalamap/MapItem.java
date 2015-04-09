@@ -14,7 +14,7 @@ public class MapItem {
     public Drawable drawable;
     public String key;
     public String youtubeKey;
-    public View view;
+    public MapItemView view;
     public LocationType locationType;
 
     public int width;
