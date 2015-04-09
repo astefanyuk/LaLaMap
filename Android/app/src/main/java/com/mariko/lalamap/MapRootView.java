@@ -55,7 +55,7 @@ public class MapRootView extends RelativeLayout {
 
         mapItem = addData(new MapItem(new LatLng(-38.209739, 31.206592), new LatLng(-52.003176, 101.519094), getResources().getDrawable(R.drawable.kit), MapItem.LocationType.Area, 100), "wDkZEUGRzMQ");
 
-        //mapItem = addData(new MapItem(new LatLng(-73.610217, -7.992628), new LatLng(-83.860957, 151.440969), getResources().getDrawable(R.drawable.pingvin), MapItem.LocationType.Area, 100), "wDkZEUGRzMQ");
+        mapItem = addData(new MapItem(new LatLng(-73.610217, -7.992628), new LatLng(-83.860957, 151.440969), getResources().getDrawable(R.drawable.pingvin), MapItem.LocationType.Area, 100), "wDkZEUGRzMQ");
 
         showMapItems(false);
 

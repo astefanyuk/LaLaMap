@@ -7,10 +7,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import java.util.Random;
+
 /**
  * Created by AStefaniuk on 09.04.2015.
  */
 public class MapItemView extends FrameLayout {
+
+    protected static Random random = new Random();
+
     private MapItem item;
     protected View view;
     protected AnimatorSet set;

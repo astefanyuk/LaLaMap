@@ -15,6 +15,7 @@ import com.mariko.animation.PathEvaluator;
 import com.mariko.animation.PathPoint;
 
 import java.lang.reflect.Method;
+import java.util.Random;
 
 /**
  * Created by AStefaniuk on 09.04.2015.
@@ -44,18 +45,9 @@ public class MapItemViewArea extends MapItemView {
             return;
         }
 
-        int maxX = (int) (width / 3.0f);
-        int maxY = (int) (height / 3.0f);
 
-        /*
-        AnimatorPath path = new AnimatorPath();
-        path.moveTo(300, 100);
-        path.curveTo(
-                300, 50,
-                200, 60,
-                0, 20);
-                */
-
+        int maxX = random.nextInt((int) (width / 3.0));
+        int maxY = random.nextInt((int) (height / 3.0));
 
         // Set up the path we're animating along
         AnimatorPath path = new AnimatorPath();
@@ -147,8 +139,33 @@ public class MapItemViewArea extends MapItemView {
         view.setRotation(rotation);
 
         if (newLoc.mX < 0 || (newLoc.mX + view.getWidth()) > getWidth()) {
-            view.setScaleX(-1 * view.getScaleX());
-            doAnimation((int) Math.min(getWidth() - view.getWidth() - 1, Math.max(1, (int) view.getTranslationX())), (int) view.getTranslationY());
+            cancelAnimationSet();
+
+            //rotate image
+            ObjectAnimator animator = ObjectAnimator.ofFloat(view, "scaleX", -1 * view.getScaleX());
+            animator.setDuration(500);
+            animator.addListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    doAnimation((int) Math.min(getWidth() - view.getWidth() - 1, Math.max(1, (int) view.getTranslationX())), (int) view.getTranslationY());
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animation) {
+
+                }
+
+                @Override
+                public void onAnimationRepeat(Animator animation) {
+
+                }
+            });
+            animator.start();
         }
     }
 }
