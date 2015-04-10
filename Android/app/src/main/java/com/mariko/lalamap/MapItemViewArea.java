@@ -5,17 +5,12 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.Point;
-import android.graphics.Rect;
 import android.util.AttributeSet;
-import android.util.Size;
+import android.util.Log;
 
 import com.mariko.animation.AnimatorPath;
 import com.mariko.animation.PathEvaluator;
 import com.mariko.animation.PathPoint;
-
-import java.lang.reflect.Method;
-import java.util.Random;
 
 /**
  * Created by AStefaniuk on 09.04.2015.
@@ -26,15 +21,26 @@ public class MapItemViewArea extends MapItemView {
     private int width;
     private int height;
 
+    private float scaleX;
+
     public MapItemViewArea(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         //setBackgroundColor(Color.RED);
+        scaleX = view.getScaleX();
     }
 
     @Override
     protected void doAnimation() {
         doAnimation(0, 0);
+    }
+
+    private float getViewHeight() {
+        return Math.abs(view.getScaleY()) * item.height;
+    }
+
+    private float getViewWidth() {
+        return Math.abs(scaleX) * item.width;
     }
 
     private void doAnimation(int x, int y) {
@@ -45,24 +51,30 @@ public class MapItemViewArea extends MapItemView {
             return;
         }
 
+        int maxX = random.nextInt(Math.min((int) (GApp.sInstance.DPI * 300), (int) (width / 3.0)));
+        int yShift = Math.abs((int) (view.getPivotY() * scaleX));
+        int maxY = (int) (random.nextFloat() * (height - getViewHeight() - yShift));
 
-        int maxX = random.nextInt((int) (width / 3.0));
-        int maxY = random.nextInt((int) (height / 3.0));
+        int[] yPoints = new int[]{
+                yShift + (int) (maxY * 0.5f),
+                yShift + (int) (maxY * 0.6f),
+                yShift + (int) (maxY * 0.8f)};
+
 
         // Set up the path we're animating along
         AnimatorPath path = new AnimatorPath();
         path.moveTo(x, y);
 
-        if (view.getScaleX() < 0) {
+        if (scaleX < 0) {
             path.curveTo(
-                    x, (int) (maxY * 0.5f),
-                    x - (int) (maxX * 0.6f), (int) (maxY * 0.6f),
-                    x - maxX, (int) (maxY * 0.8f));
+                    x, yPoints[0],
+                    x - (int) (maxX * 0.6f), yPoints[1],
+                    x - maxX, yPoints[2]);
         } else {
             path.curveTo(
-                    x + (int) (maxX * 0.4f), (int) (maxY * 0.5f),
-                    x + (int) (maxX * 0.6f), (int) (maxY * 0.6f),
-                    x + maxX, (int) (maxY * 0.8f));
+                    x + (int) (maxX * 0.4f), yPoints[0],
+                    x + (int) (maxX * 0.6f), yPoints[1],
+                    x + maxX, yPoints[2]);
         }
 
 
@@ -102,47 +114,41 @@ public class MapItemViewArea extends MapItemView {
     }
 
     @Override
-    public void setPosition(int left, int top, int width, int height) {
-        super.setPosition(left, top, width, height);
+    public void setPosition(MapData mapData, int left, int top, int width, int height) {
+        super.setPosition(mapData, left, top, width, height);
 
         if (width > 0 && height > 0 && (this.width != width || this.height != height)) {
             this.width = width;
             this.height = height;
 
-            /*
+            float zoom = mapData.position.zoom;
+            int maxHeight = Math.min(Math.max(item.height, (int) (200 * GApp.sInstance.DPI)), (int) (height * 0.7f));
+            zoom = Math.min((maxHeight * 1.0f / item.height), zoom);
+            scaleX = zoom * (scaleX > 0 ? 1 : -1);
+            view.setScaleX(scaleX);
+            view.setScaleY(zoom);
+
             if (set != null) {
                 cancelAnimationSet();
                 doAnimation((int)view.getTranslationX(), (int)view.getTranslationY());
             }
-            */
         }
     }
 
     public void setAnimatedLocation(PathPoint newLoc) {
-        view.setTranslationX(newLoc.mX);
-        view.setTranslationY(newLoc.mY);
 
-        int min = -10;
-        int max = 15;
-        float rotation = view.getRotation();
-
-        if (rotateIncrease) {
-            rotation += 0.1;
-        } else {
-            rotation -= 0.1;
+        if (width <= 0 || height <= 0) {
+            return;
         }
 
-        if (rotation >= max || rotation <= min) {
-            rotateIncrease = !rotateIncrease;
-        }
+        float nextX = newLoc.mX + (scaleX > 0 ? 1 : -1);
 
-        view.setRotation(rotation);
-
-        if (newLoc.mX < 0 || (newLoc.mX + view.getWidth()) > getWidth()) {
+        if (nextX < 0 || (scaleX < 0 && nextX < (Math.abs(scaleX) * view.getPivotX())) || (nextX + getViewWidth() + 1) >= width) {
             cancelAnimationSet();
 
             //rotate image
-            ObjectAnimator animator = ObjectAnimator.ofFloat(view, "scaleX", -1 * view.getScaleX());
+            scaleX *= -1;
+            ObjectAnimator animator = ObjectAnimator.ofFloat(view, "scaleX", scaleX);
             animator.setDuration(500);
             animator.addListener(new Animator.AnimatorListener() {
                 @Override
@@ -152,12 +158,12 @@ public class MapItemViewArea extends MapItemView {
 
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    doAnimation((int) Math.min(getWidth() - view.getWidth() - 1, Math.max(1, (int) view.getTranslationX())), (int) view.getTranslationY());
+                    doAnimation((int) Math.min(getWidth() - getViewWidth() - 1, Math.max(1, (int) view.getTranslationX())), (int) view.getTranslationY());
                 }
 
                 @Override
                 public void onAnimationCancel(Animator animation) {
-
+                    view.setScaleX(scaleX);
                 }
 
                 @Override
@@ -166,6 +172,26 @@ public class MapItemViewArea extends MapItemView {
                 }
             });
             animator.start();
+        } else {
+
+            view.setTranslationX(newLoc.mX);
+            view.setTranslationY(newLoc.mY);
+
+            int min = -10;
+            int max = 15;
+            float rotation = view.getRotation();
+
+            if (rotateIncrease) {
+                rotation += 0.1;
+            } else {
+                rotation -= 0.1;
+            }
+
+            if (rotation >= max || rotation <= min) {
+                rotateIncrease = !rotateIncrease;
+            }
+
+            view.setRotation(rotation);
         }
     }
 }

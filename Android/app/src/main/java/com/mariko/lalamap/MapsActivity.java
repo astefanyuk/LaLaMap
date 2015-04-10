@@ -18,6 +18,8 @@ public class MapsActivity extends Activity {
 
     private Timer timer;
 
+    private final MapData mapData = new MapData();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,7 +85,10 @@ public class MapsActivity extends Activity {
         mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
             @Override
             public void onCameraChange(CameraPosition cameraPosition) {
-                mapRootView.onCameraChange(mMap, cameraPosition, mMap.getProjection());
+                mapData.map = mMap;
+                mapData.position = cameraPosition;
+                mapData.projection = mMap.getProjection();
+                mapRootView.onCameraChange(mapData);
             }
         });
     }

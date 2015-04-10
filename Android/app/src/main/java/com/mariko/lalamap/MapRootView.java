@@ -55,7 +55,7 @@ public class MapRootView extends RelativeLayout {
 
         mapItem = addData(new MapItem(new LatLng(-38.209739, 31.206592), new LatLng(-52.003176, 101.519094), getResources().getDrawable(R.drawable.kit), MapItem.LocationType.Area, 100), "wDkZEUGRzMQ");
 
-        mapItem = addData(new MapItem(new LatLng(-73.610217, -7.992628), new LatLng(-83.860957, 151.440969), getResources().getDrawable(R.drawable.pingvin), MapItem.LocationType.Area, 100), "wDkZEUGRzMQ");
+        //mapItem = addData(new MapItem(new LatLng(-73.610217, -7.992628), new LatLng(-83.860957, 151.440969), getResources().getDrawable(R.drawable.pingvin), MapItem.LocationType.Area, 100), "wDkZEUGRzMQ");
 
         showMapItems(false);
 
@@ -125,7 +125,7 @@ public class MapRootView extends RelativeLayout {
         rootAnimationSet.start();
     }
 
-    public void onCameraChange(GoogleMap map, CameraPosition position, Projection projection) {
+    public void onCameraChange(MapData mapData) {
 
         showMapItems(true);
 
@@ -133,14 +133,14 @@ public class MapRootView extends RelativeLayout {
         rootAnimationSet.cancel();
         setTranslationX(0);
 
-        VisibleRegion visibleRegion = projection.getVisibleRegion();
+        //VisibleRegion visibleRegion = projection.getVisibleRegion();
 
         RectF rect = new RectF(0, 0, getWidth(), getHeight());
 
         for (MapItem item : items) {
 
-            Point point = item.pointLeftTop == null ? null : projection.toScreenLocation(item.pointLeftTop);
-            Point pointRightBottom = item.pointRightBottom == null ? null : projection.toScreenLocation(item.pointRightBottom);
+            Point point = item.pointLeftTop == null ? null : mapData.projection.toScreenLocation(item.pointLeftTop);
+            Point pointRightBottom = item.pointRightBottom == null ? null : mapData.projection.toScreenLocation(item.pointRightBottom);
 
             if (point == null && pointRightBottom == null) {
                 item.view.show(false);
@@ -171,13 +171,13 @@ public class MapRootView extends RelativeLayout {
 
                     if (item.pointLeftTop != null && item.pointRightBottom != null) {
 
-                        item.view.setPosition((int) (rectPoint.left), (int) (rectPoint.top), (int) rectPoint.width(), (int) rectPoint.height());
+                        item.view.setPosition(mapData, (int) (rectPoint.left), (int) (rectPoint.top), (int) rectPoint.width(), (int) rectPoint.height());
                     } else {
-                        item.view.setPosition((int) (rectPoint.left - item.width), (int) (rectPoint.top - item.height));
+                        item.view.setPosition(mapData, (int) (rectPoint.left - item.width), (int) (rectPoint.top - item.height));
                     }
 
                 } else if (item.locationType.equals(MapItem.LocationType.Area)) {
-                    item.view.setPosition((int) (rectPoint.left), (int) (rectPoint.top), (int) rectPoint.width(), (int) rectPoint.height());
+                    item.view.setPosition(mapData, (int) (rectPoint.left), (int) (rectPoint.top), (int) rectPoint.width(), (int) rectPoint.height());
                 }
 
                 item.view.show(true);

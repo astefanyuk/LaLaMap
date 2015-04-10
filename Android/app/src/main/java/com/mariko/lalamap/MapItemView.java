@@ -16,7 +16,7 @@ public class MapItemView extends FrameLayout {
 
     protected static Random random = new Random();
 
-    private MapItem item;
+    protected MapItem item;
     protected View view;
     protected AnimatorSet set;
 
@@ -51,7 +51,7 @@ public class MapItemView extends FrameLayout {
     }
 
 
-    public void setPosition(int left, int top, int width, int height) {
+    public void setPosition(MapData mapData, int left, int top, int width, int height) {
         FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) item.view.getLayoutParams();
 
         layoutParams.leftMargin = left;
@@ -62,7 +62,7 @@ public class MapItemView extends FrameLayout {
         requestLayout();
     }
 
-    public void setPosition(int left, int top) {
+    public void setPosition(MapData mapData, int left, int top) {
         FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) item.view.getLayoutParams();
 
         layoutParams.leftMargin = left;
