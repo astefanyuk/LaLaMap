@@ -1,23 +1,27 @@
 package com.mariko.map;
 
 import android.app.Activity;
+import android.graphics.Point;
+import android.os.Handler;
+import android.util.Log;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
 public abstract class MapStateListener {
 
-    private boolean mMapTouched = false;
-    private boolean mMapSettled = false;
-    private Timer mTimer;
-    private static final int SETTLE_TIME = 500;
-
     private GoogleMap mMap;
-    private CameraPosition mLastPosition;
     private Activity mActivity;
+    private Timer timer;
+    private boolean releasePressed;
+    private LatLng mapLeftTop;
+
+    private float zoom;
+    private boolean zoomChanged;
 
     public MapStateListener(MapFragmentEx touchableMapFragment, Activity activity) {
         this.mMap = touchableMapFragment.getMap();
@@ -26,108 +30,77 @@ public abstract class MapStateListener {
         this.mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
             @Override
             public void onCameraChange(CameraPosition cameraPosition) {
-                unsettleMap();
-                if(!mMapTouched) {
-                    runSettleTimer();
-                }
+
+                stopScroll();
+
+                mapLeftTop = null;
+                zoomChanged = false;
+                zoom = cameraPosition.zoom;
+
+                MapStateListener.this.onCameraChange(mMap.getCameraPosition());
             }
         });
 
         touchableMapFragment.setTouchListener(new MapFragmentEx.OnTouchListener() {
             @Override
             public void onTouch() {
-                touchMap();
-                unsettleMap();
+                startScroll();
             }
 
             @Override
             public void onRelease() {
-                releaseMap();
-                runSettleTimer();
+                releasePressed = true;
             }
         });
     }
 
-    private void updateLastPosition() {
-        mActivity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mLastPosition = MapStateListener.this.mMap.getCameraPosition();
-            }
-        });
-    }
+    private void startScroll() {
+        if (timer == null || releasePressed) {
 
-    private void runSettleTimer() {
-        updateLastPosition();
+            stopScroll();
 
-        if(mTimer != null) {
-            mTimer.cancel();
-            mTimer.purge();
-        }
-        mTimer = new Timer();
-        mTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                mActivity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        CameraPosition currentPosition = MapStateListener.this.mMap.getCameraPosition();
-                        if (currentPosition.equals(mLastPosition)) {
-                            settleMap();
-                        }
+            timer = new Timer();
+            timer.scheduleAtFixedRate(new TimerTask() {
+                @Override
+                public void run() {
+                    if (mActivity.isFinishing()) {
+                        stopScroll();
+                        return;
                     }
-                });
-            }
-        }, SETTLE_TIME);
-    }
+                    mActivity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
 
-    private synchronized void releaseMap() {
-        if(mMapTouched) {
-            mMapTouched = false;
-            onMapReleased();
+                            LatLng location = mMap.getProjection().fromScreenLocation(new Point(0, 0));
+
+                            if (mapLeftTop == null || !location.equals(mapLeftTop)) {
+
+                                if (mapLeftTop != null) {
+                                    Point p = mMap.getProjection().toScreenLocation(mapLeftTop);
+                                    doScroll(p.x, p.y, zoomChanged || (zoom != mMap.getCameraPosition().zoom));
+                                }
+
+                                mapLeftTop = location;
+
+
+                            }
+                        }
+                    });
+                }
+            }, 0, 10);
         }
     }
 
-    private void touchMap() {
-        if(!mMapTouched) {
-            if(mTimer != null) {
-                mTimer.cancel();
-                mTimer.purge();
-            }
-            mMapTouched = true;
-            onMapTouched();
+    private void stopScroll() {
+        if (timer != null) {
+            timer.cancel();
+            timer.purge();
+            timer = null;
         }
     }
 
-    public void unsettleMap() {
-        if(mMapSettled) {
-            if(mTimer != null) {
-                mTimer.cancel();
-                mTimer.purge();
-            }
-            mMapSettled = false;
-            mLastPosition = null;
-            onMapUnsettled();
-        }
-    }
+    protected abstract void doScroll(int x, int y, boolean zoom);
 
-    public void settleMap() {
-        if(!mMapSettled) {
-            mMapSettled = true;
-            onMapSettled();
-        }
-    }
+    protected abstract void onCameraChange(CameraPosition cameraPosition);
 
-    public void onMapTouched(){
-
-    }
-    public void onMapReleased(){
-
-    }
-    public void onMapUnsettled(){
-
-    }
-    public void onMapSettled(){
-
-    }
 }

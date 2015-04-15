@@ -2,10 +2,12 @@ package com.mariko.lalamap;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
 import com.mariko.map.MapFragmentEx;
 import com.mariko.map.MapStateListener;
 
@@ -19,13 +21,14 @@ public class MapsActivity extends Activity {
     private Timer timer;
 
     private final MapData mapData = new MapData();
+    private LatLng l;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         mapRootView = (MapRootView) findViewById(R.id.mapRootView);
-        setUpMapIfNeeded();
+        setupMap();
 
         /*
         timer = new Timer();
@@ -44,15 +47,16 @@ public class MapsActivity extends Activity {
         }, 0, 2000);
         */
 
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        setUpMapIfNeeded();
+        setupMap();
     }
 
-    private void setUpMapIfNeeded() {
+    private void setupMap() {
 
         if (mMap == null) {
 
@@ -60,6 +64,10 @@ public class MapsActivity extends Activity {
             mMap = mapFragment.getMap();
 
             if (mMap != null) {
+
+                mMap.getUiSettings().setRotateGesturesEnabled(false);
+                //mMap.getUiSettings().setZoomGesturesEnabled(false);
+                //mMap.getUiSettings().setScrollGesturesEnabled(false);
 
                 mapFragment.getMapAsync(new OnMapReadyCallback() {
                     @Override
@@ -69,27 +77,29 @@ public class MapsActivity extends Activity {
                 });
 
                 new MapStateListener(mapFragment, this) {
+
                     @Override
-                    public void onMapTouched() {
-                        mapRootView.showMapItems(false);
+                    protected void doScroll(int x, int y, boolean zoom) {
+                        Log.d("ABC", "X=" + x + " total=" + mapRootView.getTranslationX() + x);
+                        if (zoom) {
+                            mapRootView.showMapItems(false);
+                        } else {
+                            mapRootView.setTranslationX((int) (mapRootView.getTranslationX() + x));
+                            mapRootView.setTranslationY((int) (mapRootView.getTranslationY() + y));
+                        }
+
+                    }
+
+                    @Override
+                    protected void onCameraChange(CameraPosition cameraPosition) {
+
+                        mapData.map = mMap;
+                        mapData.position = cameraPosition;
+                        mapData.projection = mMap.getProjection();
+                        mapRootView.onCameraChange(mapData);
                     }
                 };
-
-                setUpMap();
             }
         }
-    }
-
-    private void setUpMap() {
-
-        mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
-            @Override
-            public void onCameraChange(CameraPosition cameraPosition) {
-                mapData.map = mMap;
-                mapData.position = cameraPosition;
-                mapData.projection = mMap.getProjection();
-                mapRootView.onCameraChange(mapData);
-            }
-        });
     }
 }

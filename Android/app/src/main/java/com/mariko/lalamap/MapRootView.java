@@ -112,7 +112,7 @@ public class MapRootView extends RelativeLayout {
         return mapItem;
     }
 
-    public void onCameraMove(int x, int y) {
+    public void scrollCamera(int x, int y) {
 
         rootAnimationSet.cancel();
         setTranslationX(0);
@@ -132,6 +132,7 @@ public class MapRootView extends RelativeLayout {
 
         rootAnimationSet.cancel();
         setTranslationX(0);
+        setTranslationY(0);
 
         //VisibleRegion visibleRegion = projection.getVisibleRegion();
 
