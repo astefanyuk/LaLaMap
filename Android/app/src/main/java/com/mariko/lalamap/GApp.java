@@ -2,7 +2,6 @@ package com.mariko.lalamap;
 
 import android.app.Application;
 import android.content.Context;
-import android.os.Build;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.WindowManager;

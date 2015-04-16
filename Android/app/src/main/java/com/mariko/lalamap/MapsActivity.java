@@ -2,12 +2,10 @@ package com.mariko.lalamap;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.LatLng;
 import com.mariko.map.MapFragmentEx;
 import com.mariko.map.MapStateListener;
 
@@ -21,7 +19,6 @@ public class MapsActivity extends Activity {
     private Timer timer;
 
     private final MapData mapData = new MapData();
-    private LatLng l;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,8 +63,7 @@ public class MapsActivity extends Activity {
             if (mMap != null) {
 
                 mMap.getUiSettings().setRotateGesturesEnabled(false);
-                //mMap.getUiSettings().setZoomGesturesEnabled(false);
-                //mMap.getUiSettings().setScrollGesturesEnabled(false);
+                mMap.getUiSettings().setZoomGesturesEnabled(false);
 
                 mapFragment.getMapAsync(new OnMapReadyCallback() {
                     @Override
@@ -79,13 +75,11 @@ public class MapsActivity extends Activity {
                 new MapStateListener(mapFragment, this) {
 
                     @Override
-                    protected void doScroll(int x, int y, boolean zoom) {
-                        Log.d("ABC", "X=" + x + " total=" + mapRootView.getTranslationX() + x);
+                    protected void doScroll(int x, int y, boolean zoom, long duration) {
                         if (zoom) {
                             mapRootView.showMapItems(false);
                         } else {
-                            mapRootView.setTranslationX((int) (mapRootView.getTranslationX() + x));
-                            mapRootView.setTranslationY((int) (mapRootView.getTranslationY() + y));
+                            mapRootView.scrollCamera(x, y, duration);
                         }
 
                     }

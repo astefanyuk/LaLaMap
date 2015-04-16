@@ -10,14 +10,11 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.Projection;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.VisibleRegion;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -112,17 +109,26 @@ public class MapRootView extends RelativeLayout {
         return mapItem;
     }
 
-    public void scrollCamera(int x, int y) {
+    public void scrollCamera(int x, int y, long duration) {
 
         rootAnimationSet.cancel();
-        setTranslationX(0);
 
-        rootAnimationSet = new AnimatorSet();
+        if (duration > 0) {
 
-        ObjectAnimator translationY = ObjectAnimator.ofFloat(this, "translationX", getTranslationX(), getTranslationX() + x);
-        rootAnimationSet.play(translationY);
-        rootAnimationSet.setDuration(2000);
-        rootAnimationSet.start();
+            ObjectAnimator moveX = ObjectAnimator.ofFloat(this, "translationX", getTranslationX(), getTranslationX() + x);
+            ObjectAnimator moveY = ObjectAnimator.ofFloat(this, "translationY", getTranslationY(), getTranslationY() + y);
+
+            moveX.setInterpolator(new DecelerateInterpolator());
+            moveY.setInterpolator(new DecelerateInterpolator());
+
+            rootAnimationSet = new AnimatorSet();
+            rootAnimationSet.setDuration(duration);
+            rootAnimationSet.playTogether(moveX, moveY);
+            rootAnimationSet.start();
+        } else {
+            setTranslationX(getTranslationX() + x);
+            setTranslationY(getTranslationY() + y);
+        }
     }
 
     public void onCameraChange(MapData mapData) {

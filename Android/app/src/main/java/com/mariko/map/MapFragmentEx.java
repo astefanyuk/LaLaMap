@@ -1,6 +1,7 @@
 package com.mariko.map;
 
 import android.os.Bundle;
+import android.support.v4.view.GestureDetectorCompat;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -12,16 +13,8 @@ import com.google.android.gms.maps.MapFragment;
 public class MapFragmentEx extends MapFragment {
 
     private View mOriginalContentView;
-    private OnTouchListener onTouchListener;
+    private GestureDetectorCompat mDetector;
 
-    public interface OnTouchListener {
-        public void onTouch();
-        public void onRelease();
-    }
-
-    public void setTouchListener(OnTouchListener onTouchListener) {
-        this.onTouchListener = onTouchListener;
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent,
@@ -29,29 +22,27 @@ public class MapFragmentEx extends MapFragment {
 
         mOriginalContentView = super.onCreateView(inflater, parent, savedInstanceState);
 
-        ViewGroup touchView = new FrameLayout(getActivity()){
+        ViewGroup touchView = new FrameLayout(getActivity()) {
+
             @Override
             public boolean dispatchTouchEvent(MotionEvent event) {
 
-                if (onTouchListener != null) {
-
-                    switch (event.getAction()) {
-                        case MotionEvent.ACTION_DOWN:
-                            onTouchListener.onTouch();
-                            break;
-                        case MotionEvent.ACTION_UP:
-                            onTouchListener.onRelease();
-                            break;
-                    }
-
+                if (mDetector != null) {
+                    mDetector.onTouchEvent(event);
                 }
+
 
                 return super.dispatchTouchEvent(event);
             }
+
         };
         touchView.addView(mOriginalContentView);
 
         return touchView;
+    }
+
+    public void setGestureDetector(GestureDetectorCompat gestureDetector) {
+        mDetector = gestureDetector;
     }
 
     @Override

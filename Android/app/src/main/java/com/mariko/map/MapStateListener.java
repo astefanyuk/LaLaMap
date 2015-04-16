@@ -1,105 +1,55 @@
 package com.mariko.map;
 
 import android.app.Activity;
-import android.graphics.Point;
-import android.os.Handler;
-import android.util.Log;
+import android.support.v4.view.GestureDetectorCompat;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.LatLng;
-
-import java.util.Timer;
-import java.util.TimerTask;
 
 public abstract class MapStateListener {
 
     private GoogleMap mMap;
-    private Activity mActivity;
-    private Timer timer;
-    private boolean releasePressed;
-    private LatLng mapLeftTop;
 
-    private float zoom;
-    private boolean zoomChanged;
 
     public MapStateListener(MapFragmentEx touchableMapFragment, Activity activity) {
         this.mMap = touchableMapFragment.getMap();
-        this.mActivity = activity;
 
         this.mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
             @Override
             public void onCameraChange(CameraPosition cameraPosition) {
 
-                stopScroll();
-
-                mapLeftTop = null;
-                zoomChanged = false;
-                zoom = cameraPosition.zoom;
-
                 MapStateListener.this.onCameraChange(mMap.getCameraPosition());
+
             }
         });
 
-        touchableMapFragment.setTouchListener(new MapFragmentEx.OnTouchListener() {
+        GestureDetectorCompat gestureDetector = new GestureDetectorCompat(activity, new GestureDetector.SimpleOnGestureListener() {
+
             @Override
-            public void onTouch() {
-                startScroll();
+            public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+                doScroll(-(int) distanceX, -(int) distanceY, false, 0);
+                return false;
+
             }
 
             @Override
-            public void onRelease() {
-                releasePressed = true;
+            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                final float d = 6;
+                int scrollX = (int) (velocityX / d);
+                int scrollY = (int) (velocityY / d);
+                mMap.animateCamera(CameraUpdateFactory.scrollBy(scrollX, scrollY));
+                doScroll((int) (scrollX * 0.9f), (int) (scrollY * 0.9f), false, 500);
+
+                return true;
             }
         });
+        touchableMapFragment.setGestureDetector(gestureDetector);
     }
 
-    private void startScroll() {
-        if (timer == null || releasePressed) {
-
-            stopScroll();
-
-            timer = new Timer();
-            timer.scheduleAtFixedRate(new TimerTask() {
-                @Override
-                public void run() {
-                    if (mActivity.isFinishing()) {
-                        stopScroll();
-                        return;
-                    }
-                    mActivity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-
-                            LatLng location = mMap.getProjection().fromScreenLocation(new Point(0, 0));
-
-                            if (mapLeftTop == null || !location.equals(mapLeftTop)) {
-
-                                if (mapLeftTop != null) {
-                                    Point p = mMap.getProjection().toScreenLocation(mapLeftTop);
-                                    doScroll(p.x, p.y, zoomChanged || (zoom != mMap.getCameraPosition().zoom));
-                                }
-
-                                mapLeftTop = location;
-
-
-                            }
-                        }
-                    });
-                }
-            }, 0, 10);
-        }
-    }
-
-    private void stopScroll() {
-        if (timer != null) {
-            timer.cancel();
-            timer.purge();
-            timer = null;
-        }
-    }
-
-    protected abstract void doScroll(int x, int y, boolean zoom);
+    protected abstract void doScroll(int x, int y, boolean zoom, long duration);
 
     protected abstract void onCameraChange(CameraPosition cameraPosition);
 

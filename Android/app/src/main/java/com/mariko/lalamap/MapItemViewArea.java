@@ -4,9 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
-import android.graphics.Color;
 import android.util.AttributeSet;
-import android.util.Log;
 
 import com.mariko.animation.AnimatorPath;
 import com.mariko.animation.PathEvaluator;
@@ -130,7 +128,7 @@ public class MapItemViewArea extends MapItemView {
 
             if (set != null) {
                 cancelAnimationSet();
-                doAnimation((int)view.getTranslationX(), (int)view.getTranslationY());
+                doAnimation((int) view.getTranslationX(), (int) view.getTranslationY());
             }
         }
     }
