@@ -13,4 +13,29 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.mariko.lalamap.DestinationList
+            android:id="@+id/destinationList"
+            android:layout_marginTop="100dip"
+            android:layout_marginLeft="100dip"
+            android:layout_marginRight="100dip"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <ImageView
+            android:id="@+id/showList"
+            android:src="@android:drawable/ic_search_category_default"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+
+    </RelativeLayout>
+
+
 </RelativeLayout>

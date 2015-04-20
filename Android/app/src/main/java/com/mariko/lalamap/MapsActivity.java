@@ -8,22 +8,30 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.gson.Gson;
 import com.mariko.map.MapFragmentEx;
 import com.mariko.map.MapStateListener;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Timer;
 
 public class MapsActivity extends Activity {
 
     private GoogleMap mMap;
     private MapRootView mapRootView;
+    private DestinationList destinationList;
 
     private Timer timer;
 
     private final MapData mapData = new MapData();
+    private boolean destinationVisible;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +39,16 @@ public class MapsActivity extends Activity {
         setContentView(R.layout.activity_maps);
         mapRootView = (MapRootView) findViewById(R.id.mapRootView);
         setupMap();
+
+        destinationList = (DestinationList) findViewById(R.id.destinationList);
+
+        findViewById(R.id.showList).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeDestinationVisibility();
+
+            }
+        });
 
         /*
         timer = new Timer();
@@ -49,6 +67,25 @@ public class MapsActivity extends Activity {
         }, 0, 2000);
         */
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (destinationVisible) {
+            changeDestinationVisibility();
+            return;
+        }
+        super.onBackPressed();
+    }
+
+    private void changeDestinationVisibility() {
+        destinationList.setVisibility(View.VISIBLE);
+        if (destinationVisible) {
+            YoYo.with(Techniques.SlideOutDown).duration(300).playOn(destinationList);
+        } else {
+            YoYo.with(Techniques.SlideInUp).duration(300).playOn(destinationList);
+        }
+        destinationVisible = !destinationVisible;
     }
 
     @Override

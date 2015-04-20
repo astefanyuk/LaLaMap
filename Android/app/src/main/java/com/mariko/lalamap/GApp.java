@@ -13,6 +13,8 @@ public class GApp extends Application {
     public static GApp sInstance;
     public float DPI;
 
+    private MapController mapController;
+
     public GApp() {
         sInstance = this;
 
@@ -28,5 +30,11 @@ public class GApp extends Application {
         display.getMetrics(metrics);
 
         DPI = metrics.density;
+
+        mapController = new MapController();
+    }
+
+    public MapController getMapController() {
+        return mapController;
     }
 }

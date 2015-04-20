@@ -36,8 +36,6 @@ public class MapRootView extends RelativeLayout {
 
     private ViewGroup mapItemsView;
 
-    private MapItemList items = new MapItemList();
-
     private AnimatorSet rootAnimationSet = new AnimatorSet();
 
     public MapRootView(Context context, AttributeSet attrs) {
@@ -52,15 +50,8 @@ public class MapRootView extends RelativeLayout {
 
         doAnimationVertical(0, 200, airplane);
 
-        try {
-            items = (new Gson().fromJson(new InputStreamReader(GApp.sInstance.getAssets().open("data.json")), MapItemList.class));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
-        for (MapItem mapItem : items) {
-
-            mapItem.init();
+        for (MapItem mapItem : GApp.sInstance.getMapController().items) {
 
             MapItemView view;
             if (mapItem.locationType.equals(MapItem.LocationType.Area)) {
@@ -121,7 +112,7 @@ public class MapRootView extends RelativeLayout {
 
         RectF rect = new RectF(0, 0, getWidth(), getHeight());
 
-        for (MapItem item : items) {
+        for (MapItem item : GApp.sInstance.getMapController().items) {
 
             Point point = item.pointLeftTop == null ? null : mapData.projection.toScreenLocation(item.pointLeftTop);
             Point pointRightBottom = item.pointRightBottom == null ? null : mapData.projection.toScreenLocation(item.pointRightBottom);
