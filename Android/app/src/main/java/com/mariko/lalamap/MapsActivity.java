@@ -1,7 +1,12 @@
 package com.mariko.lalamap;
 
+import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -43,7 +48,6 @@ public class MapsActivity extends Activity {
             }
         }, 0, 2000);
         */
-
 
     }
 

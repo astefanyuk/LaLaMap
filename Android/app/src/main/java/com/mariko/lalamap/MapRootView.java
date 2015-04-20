@@ -3,10 +3,12 @@ package com.mariko.lalamap;
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Point;
 import android.graphics.RectF;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +17,15 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.gson.Gson;
 
+import org.json.JSONArray;
+
+import java.io.BufferedReader;
+import java.io.FileDescriptor;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +36,7 @@ public class MapRootView extends RelativeLayout {
 
     private ViewGroup mapItemsView;
 
-    private List<MapItem> items = new ArrayList<MapItem>();
+    private MapItemList items = new MapItemList();
 
     private AnimatorSet rootAnimationSet = new AnimatorSet();
 
@@ -42,22 +52,29 @@ public class MapRootView extends RelativeLayout {
 
         doAnimationVertical(0, 200, airplane);
 
-        MapItem mapItem;
+        try {
+            items = (new Gson().fromJson(new InputStreamReader(GApp.sInstance.getAssets().open("data.json")), MapItemList.class));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
+        for (MapItem mapItem : items) {
 
-        addData(new MapItem(new LatLng(48.8582, 2.2945), null, getResources().getDrawable(R.drawable.tower), MapItem.LocationType.Marker, 100), "ZV9u5bPRSfo");
-        addData(new MapItem(new LatLng(-1.082650, 23.049303), null, getResources().getDrawable(R.drawable.tiger), MapItem.LocationType.Marker, 100), "wDkZEUGRzMQ");
+            mapItem.init();
 
-        mapItem = addData(new MapItem(new LatLng(40.439974, -20.402344), new LatLng(-37.597042, 53.0), getResources().getDrawable(R.drawable.afrika), MapItem.LocationType.FillRect, 100), "wDkZEUGRzMQ");
-
-        mapItem = addData(new MapItem(new LatLng(-38.209739, 31.206592), new LatLng(-52.003176, 101.519094), getResources().getDrawable(R.drawable.kit), MapItem.LocationType.Area, 100), "wDkZEUGRzMQ");
-
-        //mapItem = addData(new MapItem(new LatLng(-73.610217, -7.992628), new LatLng(-83.860957, 151.440969), getResources().getDrawable(R.drawable.pingvin), MapItem.LocationType.Area, 100), "wDkZEUGRzMQ");
+            MapItemView view;
+            if (mapItem.locationType.equals(MapItem.LocationType.Area)) {
+                view = new MapItemViewArea(getContext(), null);
+            } else {
+                view = new MapItemView(getContext(), null);
+            }
+            view.setVisibility(View.GONE);
+            mapItemsView.addView(view);
+            view.setMapItem(mapItem);
+        }
 
         showMapItems(false);
-
     }
-
 
     public void start() {
         airplane.setVisibility(View.VISIBLE);
@@ -68,46 +85,6 @@ public class MapRootView extends RelativeLayout {
         mapItemsView.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
     }
 
-    private MapItem addData(MapItem mapItem, String youtubeKey) {
-
-        mapItem.youtubeKey = youtubeKey;
-
-        MapItemView view;
-        if (mapItem.locationType.equals(MapItem.LocationType.Area)) {
-            view = new MapItemViewArea(getContext(), null);
-        } else {
-            view = new MapItemView(getContext(), null);
-        }
-        view.setVisibility(View.GONE);
-        mapItemsView.addView(view);
-        view.setMapItem(mapItem);
-
-        items.add(mapItem);
-
-        /*
-        if(mapItem.locationType.equals(MapItem.LocationType.Area)){
-            doAnimationHorizontal(0, 300, mapItem.view, 10000);
-        }else{
-            doAnimationVertical(0, 50, mapItem.view);
-        }
-        */
-
-
-        /*
-        imageView.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-
-                Intent intent = YouTubeStandalonePlayer.createVideoIntent((Activity) getContext(), getContext().getString(R.string.google_maps_key), mapItem.key, 0, true, true);
-                getContext().startActivity(intent);
-
-            }
-        });
-        */
-
-        return mapItem;
-    }
 
     public void scrollCamera(int x, int y, long duration) {
 

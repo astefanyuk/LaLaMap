@@ -1,6 +1,7 @@
 package com.mariko.lalamap;
 
 import android.graphics.drawable.Drawable;
+import android.util.TypedValue;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -10,14 +11,16 @@ import com.google.android.gms.maps.model.LatLng;
 public class MapItem {
     public LatLng pointLeftTop;
     public LatLng pointRightBottom;
-    public Drawable drawable;
+    public transient Drawable drawable;
     public String key;
     public String youtubeKey;
-    public MapItemView view;
+    public transient MapItemView view;
     public LocationType locationType;
+    public String icon;
 
     public int width;
     public int height;
+
 
     public static enum LocationType {
         Marker /*Like Google Map Marker*/,
@@ -29,11 +32,10 @@ public class MapItem {
 
     }
 
-    public MapItem(LatLng pointLeftTop, LatLng pointRightBottom, Drawable drawable, MapItem.LocationType locationType, int width) {
-        this.pointLeftTop = pointLeftTop;
-        this.pointRightBottom = pointRightBottom;
-        this.drawable = drawable;
-        this.locationType = locationType;
+
+    public void init() {
+        int iconResourceId = GApp.sInstance.getResources().getIdentifier(icon, "drawable", GApp.sInstance.getPackageName());
+        this.drawable = GApp.sInstance.getResources().getDrawable(iconResourceId);
 
         setDrawableWidth(width);
     }
