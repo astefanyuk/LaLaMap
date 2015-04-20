@@ -16,6 +16,7 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
 
@@ -50,7 +51,6 @@ public class MapRootView extends RelativeLayout {
 
         doAnimationVertical(0, 200, airplane);
 
-
         for (MapItem mapItem : GApp.sInstance.getMapController().items) {
 
             MapItemView view;
@@ -65,6 +65,11 @@ public class MapRootView extends RelativeLayout {
         }
 
         showMapItems(false);
+    }
+
+    public void plainTo(MapData mapData, MapItem item) {
+        showMapItems(false);
+        mapData.map.animateCamera(CameraUpdateFactory.newLatLngZoom(item.pointLeftTop, 10));
     }
 
     public void start() {

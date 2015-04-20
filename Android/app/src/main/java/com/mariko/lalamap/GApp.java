@@ -6,6 +6,8 @@ import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.WindowManager;
 
+import com.squareup.otto.Bus;
+
 /**
  * Created by AStefaniuk on 10.04.2015.
  */
@@ -14,6 +16,7 @@ public class GApp extends Application {
     public float DPI;
 
     private MapController mapController;
+    private Bus bus;
 
     public GApp() {
         sInstance = this;
@@ -32,9 +35,14 @@ public class GApp extends Application {
         DPI = metrics.density;
 
         mapController = new MapController();
+        bus = new Bus();
     }
 
     public MapController getMapController() {
         return mapController;
+    }
+
+    public Bus getBus() {
+        return bus;
     }
 }

@@ -19,6 +19,15 @@ import java.util.ArrayList;
  */
 public class DestinationList extends LinearLayout {
 
+    public static class DestinationSelectedEvent {
+        public final MapItem item;
+
+        public DestinationSelectedEvent(MapItem item) {
+            this.item = item;
+        }
+
+    }
+
     private RecyclerView list;
 
     public DestinationList(Context context, AttributeSet attrs) {
@@ -41,6 +50,7 @@ public class DestinationList extends LinearLayout {
                 MapItem item = GApp.sInstance.getMapController().items.get(position);
                 DestinationItemHolder destinationItemHolder = (DestinationItemHolder) holder;
 
+                destinationItemHolder.item = item;
                 destinationItemHolder.image.setImageDrawable(item.drawable);
                 destinationItemHolder.title.setText(item.icon);
             }
@@ -56,6 +66,7 @@ public class DestinationList extends LinearLayout {
 
         public TextView title;
         public ImageView image;
+        public MapItem item;
 
         public DestinationItemHolder(View itemView) {
             super(itemView);
@@ -63,7 +74,12 @@ public class DestinationList extends LinearLayout {
             this.title = (TextView) itemView.findViewById(R.id.title);
             this.image = (ImageView) itemView.findViewById(R.id.image);
 
-
+            itemView.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    GApp.sInstance.getBus().post(new DestinationSelectedEvent(item));
+                }
+            });
         }
     }
 

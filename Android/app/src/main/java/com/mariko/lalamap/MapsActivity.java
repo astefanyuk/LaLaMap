@@ -10,12 +10,14 @@ import android.widget.ImageView;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.gson.Gson;
 import com.mariko.map.MapFragmentEx;
 import com.mariko.map.MapStateListener;
+import com.squareup.otto.Subscribe;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -23,7 +25,6 @@ import java.util.Timer;
 
 public class MapsActivity extends Activity {
 
-    private GoogleMap mMap;
     private MapRootView mapRootView;
     private DestinationList destinationList;
 
@@ -91,20 +92,35 @@ public class MapsActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+        GApp.sInstance.getBus().register(this);
         setupMap();
+    }
+
+    @Override
+    protected void onPause() {
+        GApp.sInstance.getBus().unregister(this);
+        super.onPause();
+    }
+
+    @Subscribe
+    public void destinationSelected(DestinationList.DestinationSelectedEvent event) {
+        if (destinationVisible) {
+            changeDestinationVisibility();
+        }
+        mapRootView.plainTo(mapData, event.item);
     }
 
     private void setupMap() {
 
-        if (mMap == null) {
+        if (mapData.map == null) {
 
             MapFragmentEx mapFragment = (MapFragmentEx) (getFragmentManager().findFragmentById(R.id.map));
-            mMap = mapFragment.getMap();
+            mapData.map = mapFragment.getMap();
 
-            if (mMap != null) {
+            if (mapData.map != null) {
 
-                mMap.getUiSettings().setRotateGesturesEnabled(false);
-                mMap.getUiSettings().setZoomGesturesEnabled(false);
+                mapData.map.getUiSettings().setRotateGesturesEnabled(false);
+                mapData.map.getUiSettings().setZoomGesturesEnabled(false);
 
                 mapFragment.getMapAsync(new OnMapReadyCallback() {
                     @Override
@@ -128,9 +144,8 @@ public class MapsActivity extends Activity {
                     @Override
                     protected void onCameraChange(CameraPosition cameraPosition) {
 
-                        mapData.map = mMap;
                         mapData.position = cameraPosition;
-                        mapData.projection = mMap.getProjection();
+                        mapData.projection = mapData.map.getProjection();
                         mapRootView.onCameraChange(mapData);
                     }
                 };
