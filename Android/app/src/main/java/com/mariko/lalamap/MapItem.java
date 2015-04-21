@@ -36,12 +36,8 @@ public class MapItem {
     public void init() {
         int iconResourceId = GApp.sInstance.getResources().getIdentifier(icon, "drawable", GApp.sInstance.getPackageName());
         this.drawable = GApp.sInstance.getResources().getDrawable(iconResourceId);
-
-        setDrawableWidth(width);
-    }
-
-    public void setDrawableWidth(int width) {
-        this.width = width;
         this.height = (int) (drawable.getIntrinsicHeight() * width * 1.0f / drawable.getIntrinsicWidth());
     }
+
+
 }

@@ -1,39 +1,23 @@
 package com.mariko.lalamap;
 
-import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Point;
 import android.graphics.RectF;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.gson.Gson;
-
-import org.json.JSONArray;
-
-import java.io.BufferedReader;
-import java.io.FileDescriptor;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
+import com.mariko.animation.PathPoint;
 
 
 public class MapRootView extends RelativeLayout {
 
-    ImageView airplane;
+    private MapMainItem airplane;
 
     private ViewGroup mapItemsView;
 
@@ -46,10 +30,7 @@ public class MapRootView extends RelativeLayout {
 
         mapItemsView = (ViewGroup) findViewById(R.id.mapItemsView);
 
-        airplane = (ImageView) findViewById(R.id.airplane);
-        airplane.setVisibility(View.INVISIBLE);
-
-        doAnimationVertical(0, 200, airplane);
+        airplane = (MapMainItem) findViewById(R.id.airplane);
 
         for (MapItem mapItem : GApp.sInstance.getMapController().items) {
 
@@ -67,9 +48,23 @@ public class MapRootView extends RelativeLayout {
         showMapItems(false);
     }
 
+
     public void plainTo(MapData mapData, MapItem item) {
-        showMapItems(false);
-        mapData.map.animateCamera(CameraUpdateFactory.newLatLngZoom(item.pointLeftTop, 10));
+
+        Point point = mapData.map.getProjection().toScreenLocation(item.pointLeftTop);
+
+        airplane.cancelAnimationSet();
+        airplane.setPosition(mapData, 0, 0, point.x, point.y);
+        airplane.show(true);
+
+        /*
+       // showMapItems(false);
+
+        Point pointStart = new Point((int)airplane.getTranslationX(), (int)airplane.getTranslationY());
+
+
+        //mapData.map.animateCamera(CameraUpdateFactory.newLatLngZoom(item.pointLeftTop, 10));
+        */
     }
 
     public void start() {
@@ -107,7 +102,6 @@ public class MapRootView extends RelativeLayout {
     public void onCameraChange(MapData mapData) {
 
         showMapItems(true);
-
 
         rootAnimationSet.cancel();
         setTranslationX(0);
@@ -168,6 +162,7 @@ public class MapRootView extends RelativeLayout {
         }
     }
 
+    /*
     private void doAnimationVertical(final int y1, final int y2, final View view) {
         final AnimatorSet set = new AnimatorSet();
         ObjectAnimator translationY = ObjectAnimator.ofFloat(view, "translationY", y2, y1);
@@ -229,5 +224,6 @@ public class MapRootView extends RelativeLayout {
             }
         });
     }
+    */
 
 }
