@@ -51,7 +51,7 @@ public class DestinationList extends LinearLayout {
                 DestinationItemHolder destinationItemHolder = (DestinationItemHolder) holder;
 
                 destinationItemHolder.item = item;
-                destinationItemHolder.image.setImageDrawable(item.drawable);
+                destinationItemHolder.image.setImageBitmap(item.drawable);
                 destinationItemHolder.title.setText(item.icon);
             }
 

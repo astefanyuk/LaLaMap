@@ -45,7 +45,7 @@ public class MapItemView extends FrameLayout {
                 this.view.getLayoutParams().height = this.item.height;
             }
 
-            this.view.setBackgroundDrawable(this.item.drawable);
+            //this.view.setBackgroundDrawable(this.item.drawable);
             this.item.view = this;
         }
     }

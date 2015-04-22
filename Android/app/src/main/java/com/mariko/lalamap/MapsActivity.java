@@ -165,6 +165,12 @@ public class MapsActivity extends Activity {
         });
     }
 
+    private void ccc() {
+        MarkerItem markerItem = new MarkerItem();
+
+        markerItem.setItem(GApp.sInstance.getMapController(), GApp.sInstance.getMapController().items.get(3), mapData.map);
+    }
+
     private void setupMap() {
 
         if (mapData.map == null) {
@@ -179,6 +185,8 @@ public class MapsActivity extends Activity {
                 mapData.map.getUiSettings().setZoomGesturesEnabled(false);
 
                 //aaa();
+                ccc();
+
 
                 mapFragment.getMapAsync(new OnMapReadyCallback() {
                     @Override

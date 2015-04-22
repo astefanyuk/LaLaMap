@@ -12,6 +12,12 @@ import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.RelativeLayout;
 
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.mariko.animation.PathPoint;
 
 
@@ -21,7 +27,11 @@ public class MapRootView extends RelativeLayout {
 
     private ViewGroup mapItemsView;
 
+    private GoogleMap map;
+
     private AnimatorSet rootAnimationSet = new AnimatorSet();
+
+    private Marker marker;
 
     public MapRootView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -32,11 +42,35 @@ public class MapRootView extends RelativeLayout {
 
         airplane = (MapMainItem) findViewById(R.id.airplane);
 
+        /*
         for (MapItem mapItem : GApp.sInstance.getMapController().items) {
 
             MapItemView view;
             if (mapItem.locationType.equals(MapItem.LocationType.Area)) {
-                view = new MapItemViewArea(getContext(), null);
+                view = new MapItemViewArea(getContext(), null){
+                    @Override
+                    public void setAnimatedLocation(PathPoint newLoc) {
+                        super.setAnimatedLocation(newLoc);
+
+                        if(map != null){
+
+                            LatLng p = map.getProjection().fromScreenLocation(new Point((int)(newLoc.mX + 1200), (int)(newLoc.mY + 900)));
+
+                            if(marker == null){
+                                MarkerOptions markerOptions = new MarkerOptions();
+                                BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromResource(R.drawable.kit);
+                                markerOptions.icon(bitmapDescriptor);
+                                markerOptions.position(p);
+                                marker = map.addMarker(markerOptions);
+                            }
+
+                            marker.setPosition(p);
+                            marker.setRotation(getRotation());
+
+                        }
+
+                    }
+                };
             } else {
                 view = new MapItemView(getContext(), null);
             }
@@ -44,8 +78,11 @@ public class MapRootView extends RelativeLayout {
             mapItemsView.addView(view);
             view.setMapItem(mapItem);
         }
+        */
 
         showMapItems(false);
+
+
     }
 
 
@@ -101,6 +138,8 @@ public class MapRootView extends RelativeLayout {
 
     public void onCameraChange(MapData mapData) {
 
+        map = mapData.map;
+
         showMapItems(true);
 
         rootAnimationSet.cancel();
@@ -110,6 +149,7 @@ public class MapRootView extends RelativeLayout {
         //VisibleRegion visibleRegion = projection.getVisibleRegion();
 
         RectF rect = new RectF(0, 0, getWidth(), getHeight());
+        /*
 
         for (MapItem item : GApp.sInstance.getMapController().items) {
 
@@ -160,6 +200,7 @@ public class MapRootView extends RelativeLayout {
             }
 
         }
+        */
     }
 
     /*

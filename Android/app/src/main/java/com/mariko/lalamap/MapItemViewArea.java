@@ -138,6 +138,7 @@ public class MapItemViewArea extends MapItemView {
         if (width <= 0 || height <= 0) {
             return;
         }
+        /*
 
         float nextX = newLoc.mX + (scaleX > 0 ? 1 : -1);
 
@@ -191,5 +192,10 @@ public class MapItemViewArea extends MapItemView {
 
             view.setRotation(rotation);
         }
+        */
+    }
+
+    public float getRotation() {
+        return view.getRotation();
     }
 }

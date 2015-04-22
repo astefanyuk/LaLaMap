@@ -30,7 +30,7 @@ public class AnimatorPath {
      * neither the first point in the path nor the same as the previous point
      * in the path.
      */
-    public void moveTo(float x, float y) {
+    public void moveTo(double x, double y) {
         mPoints.add(PathPoint.moveTo(x, y));
     }
 
@@ -38,12 +38,12 @@ public class AnimatorPath {
      * Create a straight line from the current path point to the new one
      * specified by x and y.
      */
-    public void lineTo(float x, float y) {
+    public void lineTo(double x, double y) {
         mPoints.add(PathPoint.lineTo(x, y));
     }
 
 
-    public void curveTo(float c0X, float c0Y, float c1X, float c1Y, float x, float y) {
+    public void curveTo(double c0X, double c0Y, double c1X, double c1Y, double x, double y) {
         mPoints.add(PathPoint.curveTo(c0X, c0Y, c1X, c1Y, x, y));
     }
 

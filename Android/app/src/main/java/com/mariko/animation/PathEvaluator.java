@@ -26,9 +26,9 @@ import android.animation.TypeEvaluator;
 public class PathEvaluator implements TypeEvaluator<PathPoint> {
     @Override
     public PathPoint evaluate(float t, PathPoint startValue, PathPoint endValue) {
-        float x, y;
+        double x, y;
         if (endValue.mOperation == PathPoint.CURVE) {
-            float oneMinusT = 1 - t;
+            double oneMinusT = 1 - t;
             x = oneMinusT * oneMinusT * oneMinusT * startValue.mX +
                     3 * oneMinusT * oneMinusT * t * endValue.mControl0X +
                     3 * oneMinusT * t * t * endValue.mControl1X +

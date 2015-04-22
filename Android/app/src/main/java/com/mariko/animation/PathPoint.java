@@ -34,17 +34,17 @@ public class PathPoint {
     /**
      * The location of this PathPoint
      */
-    public float mX, mY;
+    public double mX, mY;
 
     /**
      * The first control point, if any, for a PathPoint of type CURVE
      */
-    float mControl0X, mControl0Y;
+    double mControl0X, mControl0Y;
 
     /**
      * The second control point, if any, for a PathPoint of type CURVE
      */
-    float mControl1X, mControl1Y;
+    double mControl1X, mControl1Y;
 
     /**
      * The motion described by the path to get from the previous PathPoint in an AnimatorPath
@@ -57,7 +57,7 @@ public class PathPoint {
     /**
      * Line/Move constructor
      */
-    private PathPoint(int operation, float x, float y) {
+    private PathPoint(int operation, double x, double y) {
         mOperation = operation;
         mX = x;
         mY = y;
@@ -66,7 +66,7 @@ public class PathPoint {
     /**
      * Curve constructor
      */
-    private PathPoint(float c0X, float c0Y, float c1X, float c1Y, float x, float y) {
+    private PathPoint(double c0X, double c0Y, double c1X, double c1Y, double x, double y) {
         mControl0X = c0X;
         mControl0Y = c0Y;
         mControl1X = c1X;
@@ -79,12 +79,12 @@ public class PathPoint {
     /**
      * Constructs and returns a PathPoint object that describes a line to the given xy location.
      */
-    public static PathPoint lineTo(float x, float y) {
+    public static PathPoint lineTo(double x, double y) {
         return new PathPoint(LINE, x, y);
     }
 
 
-    public static PathPoint curveTo(float c0X, float c0Y, float c1X, float c1Y, float x, float y) {
+    public static PathPoint curveTo(double c0X, double c0Y, double c1X, double c1Y, double x, double y) {
         return new PathPoint(c0X, c0Y, c1X, c1Y, x, y);
     }
 
@@ -92,7 +92,7 @@ public class PathPoint {
      * Constructs and returns a PathPoint object that describes a discontinuous move to the given
      * xy location.
      */
-    public static PathPoint moveTo(float x, float y) {
+    public static PathPoint moveTo(double x, double y) {
         return new PathPoint(MOVE, x, y);
     }
 }
