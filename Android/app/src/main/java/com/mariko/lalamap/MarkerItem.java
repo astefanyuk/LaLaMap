@@ -31,7 +31,6 @@ public class MarkerItem {
     private MapItem item;
     private GoogleMap map;
 
-    private float scaleX = 1.0f;
     protected AnimatorSet set;
     private boolean rotateIncrease;
 
@@ -45,23 +44,11 @@ public class MarkerItem {
         }
 
         MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(item.drawable));
+        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(item.getBitmap()));
         markerOptions.position(item.pointLeftTop);
         marker = map.addMarker(markerOptions);
 
-
-        markerOptions = new MarkerOptions();
-        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(item.drawable));
-        markerOptions.position(item.pointLeftTop);
-        map.addMarker(markerOptions);
-
-        markerOptions = new MarkerOptions();
-        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(item.drawable));
-        markerOptions.position(item.pointRightBottom);
-        map.addMarker(markerOptions);
-
         doAnimation();
-
     }
 
     protected void cancelAnimationSet() {
@@ -78,40 +65,24 @@ public class MarkerItem {
 
         LatLng position = marker.getPosition();
 
-        double distanceLatitude = Math.abs(item.pointLeftTop.latitude - item.pointRightBottom.latitude);
-        double distanceLongitude = Math.abs(item.pointLeftTop.longitude - item.pointRightBottom.longitude);
+        double latitudeDistance = random.nextDouble() * (Math.abs(item.pointLeftTop.latitude - item.pointRightBottom.latitude) / 4.0f);
 
-        double maxLongitude = random.nextDouble() * (distanceLongitude / 3.0f);
+        double endLatitude = position.latitude - latitudeDistance;
 
-        double latitudeShift = Math.abs(item.pointLeftTop.latitude - position.latitude);
-
-        double maxLatitude = random.nextFloat() * (distanceLatitude - latitudeShift);
-
-        double longitude = position.longitude;
-        double latitude = position.latitude;
-
-        double[] latitudePoints = new double[]{
-                (position.latitude - latitudeShift - (maxLatitude * 0.5f)),
-                (position.latitude - latitudeShift - (maxLatitude * 0.6f)),
-                (position.latitude - latitudeShift - (maxLatitude * 0.8f))};
-
-
-        // Set up the path we're animating along
-        AnimatorPath path = new AnimatorPath();
-        path.moveTo(latitude, longitude);
-
-        if (scaleX < 0) {
-            path.curveTo(
-                    latitudePoints[0], longitude,
-                    latitudePoints[1], longitude - (int) (maxLongitude * 0.6f),
-                    latitudePoints[2], longitude - maxLongitude);
-        } else {
-            path.curveTo(
-                    latitudePoints[0], longitude + (int) (maxLongitude * 0.4f),
-                    latitudePoints[1], longitude + (int) (maxLongitude * 0.6f),
-                    latitudePoints[2], longitude + maxLongitude);
+        if (endLatitude < item.pointRightBottom.latitude) {
+            endLatitude = position.latitude + latitudeDistance;
         }
 
+        double distanceLongitude = Math.abs(item.pointLeftTop.longitude - item.pointRightBottom.longitude);
+        double endLongitude = position.longitude + (item.getScaleX() > 0 ? 1 : -1) * random.nextDouble() * (distanceLongitude / 3.0f);
+
+        AnimatorPath path = new AnimatorPath();
+        path.moveTo(position.latitude, position.longitude);
+
+        path.curveTo(
+                position.latitude - Math.abs(position.latitude - endLatitude) * 0.3f, position.longitude + (item.getScaleX() > 0 ? 1 : -1) * Math.abs(position.longitude - endLongitude) * 0.3f,
+                position.latitude - Math.abs(position.latitude - endLatitude) * 0.6f, position.longitude + (item.getScaleX() > 0 ? 1 : -1) * Math.abs(position.longitude - endLongitude) * 0.6f,
+                endLatitude, endLongitude);
 
         // Set up the animation
         ObjectAnimator anim = ObjectAnimator.ofObject(this, "AnimatedLocation",
@@ -150,49 +121,10 @@ public class MarkerItem {
 
     public void setAnimatedLocation(PathPoint newLoc) {
 
+        if (newLoc.mY >= item.pointLeftTop.longitude &&
+                newLoc.mY <= item.pointRightBottom.longitude) {
 
-        double nextX = newLoc.mX + (scaleX > 0 ? 1 : -1);
-
-        if (false) {
-//                (nextX < 0 || (scaleX < 0 && nextX < (Math.abs(scaleX) * view.getPivotX())) || (nextX + getViewWidth() + 1) >= width) {
-            cancelAnimationSet();
-
-            /*
-
-            //rotate image
-            scaleX *= -1;
-            ObjectAnimator animator = ObjectAnimator.ofFloat(view, "scaleX", scaleX);
-            animator.setDuration(500);
-            animator.addListener(new Animator.AnimatorListener() {
-                @Override
-                public void onAnimationStart(Animator animation) {
-
-                }
-
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    doAnimation((int) Math.min(getWidth() - getViewWidth() - 1, Math.max(1, (int) view.getTranslationX())), (int) view.getTranslationY());
-                }
-
-                @Override
-                public void onAnimationCancel(Animator animation) {
-                    view.setScaleX(scaleX);
-                }
-
-                @Override
-                public void onAnimationRepeat(Animator animation) {
-
-                }
-            });
-            animator.start();
-            */
-        } else {
-
-            //if(newLoc.mX >= item.pointRightBottom.latitude && newLoc.mX <= item.pointLeftTop.latitude)
-            {
-                marker.setPosition(new LatLng(newLoc.mX, newLoc.mY));
-            }
-
+            marker.setPosition(new LatLng(newLoc.mX, newLoc.mY));
 
             int min = -10;
             int max = 15;
@@ -209,6 +141,24 @@ public class MarkerItem {
             }
 
             marker.setRotation(rotation);
+
+        } else {
+            cancelAnimationSet();
+            item.rotate();
+            marker.setIcon(BitmapDescriptorFactory.fromBitmap(item.getBitmap()));
+            doAnimation();
+        }
+
+        LatLng position = marker.getPosition();
+
+        double v = Math.abs(item.pointLeftTop.longitude - item.pointRightBottom.longitude) * 0.15f;
+
+        if (position.longitude < (item.pointLeftTop.longitude + v)) {
+            marker.setAlpha(1 - (float) (Math.abs(item.pointLeftTop.longitude + v - position.longitude) * 1.0f / v));
+        } else if (position.longitude > (item.pointRightBottom.longitude - v)) {
+            marker.setAlpha(1 - (float) (Math.abs(item.pointRightBottom.longitude - v - position.longitude) * 1.0f / v));
+        } else {
+            marker.setAlpha(1);
         }
     }
 }

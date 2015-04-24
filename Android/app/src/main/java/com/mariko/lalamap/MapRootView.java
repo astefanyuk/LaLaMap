@@ -31,7 +31,6 @@ public class MapRootView extends RelativeLayout {
 
     private AnimatorSet rootAnimationSet = new AnimatorSet();
 
-    private Marker marker;
 
     public MapRootView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -102,6 +101,14 @@ public class MapRootView extends RelativeLayout {
 
         //mapData.map.animateCamera(CameraUpdateFactory.newLatLngZoom(item.pointLeftTop, 10));
         */
+    }
+
+    public void mapReady(MapData mapData) {
+        MarkerItem markerItem = new MarkerItem();
+
+        markerItem.setItem(GApp.sInstance.getMapController(), GApp.sInstance.getMapController().items.get(3), mapData.map);
+
+        start();
     }
 
     public void start() {

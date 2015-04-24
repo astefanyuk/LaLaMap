@@ -2,7 +2,9 @@ package com.mariko.lalamap;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.RotateDrawable;
 import android.util.TypedValue;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -13,7 +15,8 @@ import com.google.android.gms.maps.model.LatLng;
 public class MapItem {
     public LatLng pointLeftTop;
     public LatLng pointRightBottom;
-    public transient Bitmap drawable;
+    private transient Bitmap drawableRotated;
+    private transient Bitmap drawable;
     public String key;
     public String youtubeKey;
     public transient MapItemView view;
@@ -22,6 +25,8 @@ public class MapItem {
 
     public int width;
     public int height;
+
+    private transient float scaleX = 1.0f;
 
 
     public static enum LocationType {
@@ -41,5 +46,26 @@ public class MapItem {
         this.height = (int) (drawable.getHeight() * width * 1.0f / drawable.getWidth());
     }
 
+    public float getScaleX() {
+        return scaleX;
+    }
+
+    public Bitmap getBitmap() {
+
+        if (scaleX > 0) {
+            return drawable;
+        } else {
+            if (drawableRotated == null) {
+                Matrix matrix = new Matrix();
+                matrix.preScale(-1, 1);
+                drawableRotated = Bitmap.createBitmap(drawable, 0, 0, drawable.getWidth(), drawable.getHeight(), matrix, true);
+            }
+            return drawableRotated;
+        }
+    }
+
+    public void rotate() {
+        scaleX *= -1;
+    }
 
 }

@@ -121,56 +121,6 @@ public class MapsActivity extends Activity {
         mapRootView.plainTo(mapData, event.item);
     }
 
-    private void aaa() {
-
-        MarkerOptions markerOptions = new MarkerOptions();
-
-        BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromResource(R.drawable.tiger);
-
-        markerOptions.icon(bitmapDescriptor);
-
-        markerOptions.position(new LatLng(50.398194, 30.488018));
-
-        final Marker marker = mapData.map.addMarker(markerOptions);
-
-        //Make the marker bounce
-        final Handler handler = new Handler();
-
-        final long startTime = SystemClock.uptimeMillis();
-        final long duration = 20000;
-
-        Projection proj = mapData.map.getProjection();
-        final LatLng markerLatLng = marker.getPosition();
-        Point startPoint = proj.toScreenLocation(markerLatLng);
-        startPoint.offset(0, -200);
-        final LatLng startLatLng = proj.fromScreenLocation(startPoint);
-
-        final Interpolator interpolator = new BounceInterpolator();
-
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                long elapsed = SystemClock.uptimeMillis() - startTime;
-                float t = interpolator.getInterpolation((float) elapsed / duration);
-                double lng = t * markerLatLng.longitude + (1 - t) * startLatLng.longitude;
-                double lat = t * markerLatLng.latitude + (1 - t) * startLatLng.latitude;
-                marker.setPosition(new LatLng(lat, lng));
-                marker.setRotation(marker.getRotation() + 1);
-
-                if (t < 1.0) {
-                    // Post again 16ms later.
-                    handler.postDelayed(this, 16);
-                }
-            }
-        });
-    }
-
-    private void ccc() {
-        MarkerItem markerItem = new MarkerItem();
-
-        markerItem.setItem(GApp.sInstance.getMapController(), GApp.sInstance.getMapController().items.get(3), mapData.map);
-    }
-
     private void setupMap() {
 
         if (mapData.map == null) {
@@ -181,17 +131,14 @@ public class MapsActivity extends Activity {
             if (mapData.map != null) {
 
                 mapData.map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-                mapData.map.getUiSettings().setRotateGesturesEnabled(false);
-                mapData.map.getUiSettings().setZoomGesturesEnabled(false);
-
-                //aaa();
-                ccc();
+                //mapData.map.getUiSettings().setRotateGesturesEnabled(false);
+                //mapData.map.getUiSettings().setZoomGesturesEnabled(false);
 
 
                 mapFragment.getMapAsync(new OnMapReadyCallback() {
                     @Override
                     public void onMapReady(GoogleMap googleMap) {
-                        mapRootView.start();
+                        mapRootView.mapReady(mapData);
                     }
                 });
 
