@@ -52,7 +52,7 @@ public class DestinationList extends LinearLayout {
 
                 destinationItemHolder.item = item;
                 destinationItemHolder.image.setImageBitmap(item.getBitmap());
-                destinationItemHolder.title.setText(item.icon);
+               // destinationItemHolder.title.setText(item.icon);
             }
 
             @Override

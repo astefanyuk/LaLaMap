@@ -19,7 +19,6 @@ public class MapItem {
     private transient Bitmap drawable;
     public String key;
     public String youtubeKey;
-    public transient MapItemView view;
     public LocationType locationType;
     public String icon;
 
@@ -44,6 +43,9 @@ public class MapItem {
         int iconResourceId = GApp.sInstance.getResources().getIdentifier(icon, "drawable", GApp.sInstance.getPackageName());
         this.drawable = BitmapFactory.decodeResource(GApp.sInstance.getResources(), iconResourceId);
         this.height = (int) (drawable.getHeight() * width * 1.0f / drawable.getWidth());
+
+        this.drawable = Bitmap.createScaledBitmap(drawable, this.width, this.height, false);
+
     }
 
     public float getScaleX() {

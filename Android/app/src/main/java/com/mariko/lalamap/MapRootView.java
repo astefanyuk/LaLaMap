@@ -3,7 +3,6 @@ package com.mariko.lalamap;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
-import android.graphics.Point;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -13,12 +12,10 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.RelativeLayout;
 
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.mariko.animation.PathPoint;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MapRootView extends RelativeLayout {
@@ -31,6 +28,7 @@ public class MapRootView extends RelativeLayout {
 
     private AnimatorSet rootAnimationSet = new AnimatorSet();
 
+    private List<MarkerItem> items = new ArrayList<MarkerItem>();
 
     public MapRootView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -38,46 +36,6 @@ public class MapRootView extends RelativeLayout {
         LayoutInflater.from(context).inflate(R.layout.map_root, this);
 
         mapItemsView = (ViewGroup) findViewById(R.id.mapItemsView);
-
-        airplane = (MapMainItem) findViewById(R.id.airplane);
-
-        /*
-        for (MapItem mapItem : GApp.sInstance.getMapController().items) {
-
-            MapItemView view;
-            if (mapItem.locationType.equals(MapItem.LocationType.Area)) {
-                view = new MapItemViewArea(getContext(), null){
-                    @Override
-                    public void setAnimatedLocation(PathPoint newLoc) {
-                        super.setAnimatedLocation(newLoc);
-
-                        if(map != null){
-
-                            LatLng p = map.getProjection().fromScreenLocation(new Point((int)(newLoc.mX + 1200), (int)(newLoc.mY + 900)));
-
-                            if(marker == null){
-                                MarkerOptions markerOptions = new MarkerOptions();
-                                BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromResource(R.drawable.kit);
-                                markerOptions.icon(bitmapDescriptor);
-                                markerOptions.position(p);
-                                marker = map.addMarker(markerOptions);
-                            }
-
-                            marker.setPosition(p);
-                            marker.setRotation(getRotation());
-
-                        }
-
-                    }
-                };
-            } else {
-                view = new MapItemView(getContext(), null);
-            }
-            view.setVisibility(View.GONE);
-            mapItemsView.addView(view);
-            view.setMapItem(mapItem);
-        }
-        */
 
         showMapItems(false);
 
@@ -87,32 +45,45 @@ public class MapRootView extends RelativeLayout {
 
     public void plainTo(MapData mapData, MapItem item) {
 
-        Point point = mapData.map.getProjection().toScreenLocation(item.pointLeftTop);
+        airplane.stopAnimation();
+        airplane.item.pointRightBottom = item.pointLeftTop;
 
-        airplane.cancelAnimationSet();
-        airplane.setPosition(mapData, 0, 0, point.x, point.y);
-        airplane.show(true);
+        airplane.startAnimation();
 
-        /*
-       // showMapItems(false);
-
-        Point pointStart = new Point((int)airplane.getTranslationX(), (int)airplane.getTranslationY());
-
-
-        //mapData.map.animateCamera(CameraUpdateFactory.newLatLngZoom(item.pointLeftTop, 10));
-        */
     }
 
     public void mapReady(MapData mapData) {
-        MarkerItem markerItem = new MarkerItem();
 
-        markerItem.setItem(GApp.sInstance.getMapController(), GApp.sInstance.getMapController().items.get(3), mapData.map);
+        initMainItem(mapData);
+
+        for(MapItem item : GApp.sInstance.getMapController().items){
+
+            MarkerItem markerItem = new MarkerItem();
+
+            markerItem.setItem(GApp.sInstance.getMapController(), item, mapData.map);
+
+            items.add(markerItem);
+        }
 
         start();
     }
 
+    private void initMainItem(MapData mapData) {
+        MapItem item = new MapItem();
+        item.icon = "airplane";
+        item.locationType = MapItem.LocationType.Area;
+        item.width = 200;
+
+        item.pointLeftTop = new LatLng(0,0);
+
+        item.init();
+
+        airplane = new MapMainItem();
+        airplane.setItem(GApp.sInstance.getMapController(), item, mapData.map);
+    }
+
     public void start() {
-        airplane.setVisibility(View.VISIBLE);
+       // airplane.setVisibility(View.VISIBLE);
         showMapItems(true);
     }
 

@@ -3,12 +3,8 @@ package com.mariko.lalamap;
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.graphics.RectF;
-import android.util.Log;
-import android.view.animation.AnimationSet;
 
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -28,7 +24,7 @@ public class MarkerItem {
 
     private Marker marker;
     private MapController mapController;
-    private MapItem item;
+    public MapItem item;
     private GoogleMap map;
 
     protected AnimatorSet set;
@@ -48,10 +44,10 @@ public class MarkerItem {
         markerOptions.position(item.pointLeftTop);
         marker = map.addMarker(markerOptions);
 
-        doAnimation();
+        startAnimation();
     }
 
-    protected void cancelAnimationSet() {
+    protected void stopAnimation() {
         if (set != null) {
             set.removeAllListeners();
             set.cancel();
@@ -59,9 +55,13 @@ public class MarkerItem {
         }
     }
 
-    private void doAnimation() {
+    public void startAnimation() {
 
-        cancelAnimationSet();
+        stopAnimation();
+
+        if(item.pointLeftTop == null || item.pointRightBottom == null){
+            return;
+        }
 
         LatLng position = marker.getPosition();
 
@@ -101,7 +101,7 @@ public class MarkerItem {
 
             @Override
             public void onAnimationEnd(Animator animation) {
-                doAnimation();
+                startAnimation();
             }
 
             @Override
@@ -143,10 +143,10 @@ public class MarkerItem {
             marker.setRotation(rotation);
 
         } else {
-            cancelAnimationSet();
+            stopAnimation();
             item.rotate();
             marker.setIcon(BitmapDescriptorFactory.fromBitmap(item.getBitmap()));
-            doAnimation();
+            startAnimation();
         }
 
         LatLng position = marker.getPosition();
