@@ -1,5 +1,7 @@
 package com.mariko.lalamap;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+
 /**
  * Created by AStefaniuk on 21.04.2015.
  */
@@ -26,6 +28,9 @@ public class MapMainItem extends MarkerItem {
         if(destinationMarkerItem != null){
             item.pointRightBottom = destinationMarkerItem.getPosition();
         }
+
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(getMarker().getPosition(), map.getMinZoomLevel()));
+
 
         super.startAnimation();
     }

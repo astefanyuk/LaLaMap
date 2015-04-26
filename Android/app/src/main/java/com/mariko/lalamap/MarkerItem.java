@@ -25,7 +25,7 @@ public class MarkerItem {
     private Marker marker;
     private MapController mapController;
     public MapItem item;
-    private GoogleMap map;
+    protected GoogleMap map;
 
     protected AnimatorSet set;
     private boolean rotateIncrease;
@@ -158,6 +158,7 @@ public class MarkerItem {
 
     private void updateVisibility() {
 
+
         if(!item.supportsRotation){
             return;
         }
@@ -177,5 +178,9 @@ public class MarkerItem {
 
     public LatLng getPosition(){
         return marker.getPosition();
+    }
+
+    public Marker getMarker() {
+        return marker;
     }
 }

@@ -121,9 +121,11 @@ public class MapsActivity extends Activity {
         mapRootView.plainTo(mapData, event.item);
     }
 
+
     @Subscribe
     public void stopEvent(StopEvent event) {
-        mapData.map.animateCamera(CameraUpdateFactory.newLatLngZoom(event.point, 5));
+        mapRootView.plainDone(mapData);
+
     }
 
     private void setupMap() {
