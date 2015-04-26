@@ -25,23 +25,6 @@
   },
   {
     "youtubeKey": "wDkZEUGRzMQ",
-    "icon": "afrika",
-    "locationType": "FillRect",
-    "pointLeftTop": {
-      "longitude": -20.402344,
-      "latitude": 40.439974,
-      "CK": 1
-    },
-    "pointRightBottom": {
-      "longitude": 53.0,
-      "latitude": -37.597042,
-      "CK": 1
-    },
-    "width": 100,
-    "height": 108
-  },
-  {
-    "youtubeKey": "wDkZEUGRzMQ",
     "icon": "kit",
     "locationType": "Area",
     "pointLeftTop": {

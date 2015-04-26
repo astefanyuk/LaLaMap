@@ -1,40 +1,40 @@
 package com.mariko.lalamap;
 
-import android.animation.ObjectAnimator;
-import android.animation.PropertyValuesHolder;
 import android.app.Activity;
-import android.graphics.Point;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.SystemClock;
 import android.view.View;
-import android.view.animation.BounceInterpolator;
-import android.view.animation.Interpolator;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.Projection;
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.gson.Gson;
 import com.mariko.map.MapFragmentEx;
 import com.mariko.map.MapStateListener;
 import com.squareup.otto.Subscribe;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.Timer;
 
 public class MapsActivity extends Activity {
+
+    public static class StopEvent {
+        public final LatLng point;
+
+        public StopEvent(LatLng point){
+            this.point = point;
+        }
+    }
+
+    public static class DestinationSelectedEvent {
+        public final MapItem item;
+
+        public DestinationSelectedEvent(MapItem item) {
+            this.item = item;
+        }
+
+    }
 
     private MapRootView mapRootView;
     private DestinationList destinationList;
@@ -114,11 +114,16 @@ public class MapsActivity extends Activity {
     }
 
     @Subscribe
-    public void destinationSelected(DestinationList.DestinationSelectedEvent event) {
+    public void destinationSelected(DestinationSelectedEvent event) {
         if (destinationVisible) {
             changeDestinationVisibility();
         }
         mapRootView.plainTo(mapData, event.item);
+    }
+
+    @Subscribe
+    public void stopEvent(StopEvent event) {
+        mapData.map.animateCamera(CameraUpdateFactory.newLatLngZoom(event.point, 5));
     }
 
     private void setupMap() {

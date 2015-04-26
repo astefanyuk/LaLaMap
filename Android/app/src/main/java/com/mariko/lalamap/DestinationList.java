@@ -19,15 +19,6 @@ import java.util.ArrayList;
  */
 public class DestinationList extends LinearLayout {
 
-    public static class DestinationSelectedEvent {
-        public final MapItem item;
-
-        public DestinationSelectedEvent(MapItem item) {
-            this.item = item;
-        }
-
-    }
-
     private RecyclerView list;
 
     public DestinationList(Context context, AttributeSet attrs) {
@@ -77,7 +68,7 @@ public class DestinationList extends LinearLayout {
             itemView.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    GApp.sInstance.getBus().post(new DestinationSelectedEvent(item));
+                    GApp.sInstance.getBus().post(new MapsActivity.DestinationSelectedEvent(item));
                 }
             });
         }

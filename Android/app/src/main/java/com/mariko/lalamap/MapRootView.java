@@ -28,7 +28,7 @@ public class MapRootView extends RelativeLayout {
 
     private AnimatorSet rootAnimationSet = new AnimatorSet();
 
-    private List<MarkerItem> items = new ArrayList<MarkerItem>();
+    private MarkerItemList items = new MarkerItemList();
 
     public MapRootView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -46,7 +46,7 @@ public class MapRootView extends RelativeLayout {
     public void plainTo(MapData mapData, MapItem item) {
 
         airplane.stopAnimation();
-        airplane.item.pointRightBottom = item.pointLeftTop;
+        airplane.destinationMarkerItem = items.findByMapItem(item);
 
         airplane.startAnimation();
 
@@ -73,6 +73,8 @@ public class MapRootView extends RelativeLayout {
         item.icon = "airplane";
         item.locationType = MapItem.LocationType.Area;
         item.width = 200;
+
+        item.supportsRotation = false;
 
         item.pointLeftTop = new LatLng(0,0);
 

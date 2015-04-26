@@ -119,6 +119,13 @@ public class MarkerItem {
         set.start();
     }
 
+    protected void onEnd(){
+        stopAnimation();
+        item.rotate();
+        marker.setIcon(BitmapDescriptorFactory.fromBitmap(item.getBitmap()));
+        startAnimation();
+    }
+
     public void setAnimatedLocation(PathPoint newLoc) {
 
         if (newLoc.mY >= item.pointLeftTop.longitude &&
@@ -143,13 +150,19 @@ public class MarkerItem {
             marker.setRotation(rotation);
 
         } else {
-            stopAnimation();
-            item.rotate();
-            marker.setIcon(BitmapDescriptorFactory.fromBitmap(item.getBitmap()));
-            startAnimation();
+           onEnd();
         }
 
-        LatLng position = marker.getPosition();
+        updateVisibility();
+    }
+
+    private void updateVisibility() {
+
+        if(!item.supportsRotation){
+            return;
+        }
+
+        LatLng position = getPosition();
 
         double v = Math.abs(item.pointLeftTop.longitude - item.pointRightBottom.longitude) * 0.15f;
 
@@ -160,5 +173,9 @@ public class MarkerItem {
         } else {
             marker.setAlpha(1);
         }
+    }
+
+    public LatLng getPosition(){
+        return marker.getPosition();
     }
 }

@@ -26,6 +26,7 @@ public class MapItem {
     public int height;
 
     private transient float scaleX = 1.0f;
+    public transient boolean supportsRotation = true;
 
 
     public static enum LocationType {
