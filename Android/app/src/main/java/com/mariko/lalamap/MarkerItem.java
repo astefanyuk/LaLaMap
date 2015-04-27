@@ -13,6 +13,8 @@ import com.mariko.animation.AnimatorPath;
 import com.mariko.animation.PathEvaluator;
 import com.mariko.animation.PathPoint;
 
+import org.apache.http.util.LangUtils;
+
 import java.util.Random;
 
 /**
@@ -22,7 +24,7 @@ public class MarkerItem {
 
     protected static Random random = new Random();
 
-    private Marker marker;
+    protected Marker marker;
     private MapController mapController;
     public MapItem item;
     protected GoogleMap map;
@@ -55,33 +57,39 @@ public class MarkerItem {
         }
     }
 
+    protected LatLng getSourcePosition() {
+        return item.getScaleX() > 0 ? this.item.pointLeftTop : this.item.pointRightBottom;
+    }
+
+    protected LatLng getTargetPosition() {
+        return item.getScaleX() > 0 ? this.item.pointRightBottom : this.item.pointLeftTop;
+    }
+
     public void startAnimation() {
 
         stopAnimation();
 
-        if(item.pointLeftTop == null || item.pointRightBottom == null){
+        LatLng sourcePosition = getSourcePosition();
+        LatLng targetPosition = getTargetPosition();
+
+        if (sourcePosition == null || targetPosition == null) {
             return;
         }
 
         LatLng position = marker.getPosition();
 
-        double latitudeDistance = random.nextDouble() * (Math.abs(item.pointLeftTop.latitude - item.pointRightBottom.latitude) / 4.0f);
+        double latitudeDistance = random.nextDouble() * (Math.abs(sourcePosition.latitude - targetPosition.latitude) / 4.0f);
 
-        double endLatitude = position.latitude - latitudeDistance;
+        double endLatitude = position.latitude + (sourcePosition.latitude <= targetPosition.latitude ? 1 : -1) * latitudeDistance;
 
-        if (endLatitude < item.pointRightBottom.latitude) {
-            endLatitude = position.latitude + latitudeDistance;
-        }
-
-        double distanceLongitude = Math.abs(item.pointLeftTop.longitude - item.pointRightBottom.longitude);
-        double endLongitude = position.longitude + (item.getScaleX() > 0 ? 1 : -1) * random.nextDouble() * (distanceLongitude / 3.0f);
+        double endLongitude = position.longitude + (sourcePosition.longitude <= targetPosition.longitude ? 1 : -1) * random.nextDouble() * (Math.abs(sourcePosition.longitude - targetPosition.longitude) / 3.0f);
 
         AnimatorPath path = new AnimatorPath();
         path.moveTo(position.latitude, position.longitude);
 
         path.curveTo(
-                position.latitude - Math.abs(position.latitude - endLatitude) * 0.3f, position.longitude + (item.getScaleX() > 0 ? 1 : -1) * Math.abs(position.longitude - endLongitude) * 0.3f,
-                position.latitude - Math.abs(position.latitude - endLatitude) * 0.6f, position.longitude + (item.getScaleX() > 0 ? 1 : -1) * Math.abs(position.longitude - endLongitude) * 0.6f,
+                position.latitude - Math.abs(position.latitude - endLatitude) * 0.3f, position.longitude + (sourcePosition.longitude <= targetPosition.longitude ? 1 : -1) * Math.abs(position.longitude - endLongitude) * 0.3f,
+                position.latitude - Math.abs(position.latitude - endLatitude) * 0.6f, position.longitude + (sourcePosition.longitude <= targetPosition.longitude ? 1 : -1) * Math.abs(position.longitude - endLongitude) * 0.6f,
                 endLatitude, endLongitude);
 
         // Set up the animation
@@ -126,10 +134,14 @@ public class MarkerItem {
         startAnimation();
     }
 
+    protected boolean canMovePoint(PathPoint newLoc) {
+        return newLoc.mY >= item.pointLeftTop.longitude &&
+                newLoc.mY <= item.pointRightBottom.longitude;
+    }
+
     public void setAnimatedLocation(PathPoint newLoc) {
 
-        if (newLoc.mY >= item.pointLeftTop.longitude &&
-                newLoc.mY <= item.pointRightBottom.longitude) {
+        if (canMovePoint(newLoc)) {
 
             marker.setPosition(new LatLng(newLoc.mX, newLoc.mY));
 

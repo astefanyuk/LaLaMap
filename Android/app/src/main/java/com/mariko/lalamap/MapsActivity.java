@@ -3,6 +3,8 @@ package com.mariko.lalamap;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
@@ -39,10 +41,10 @@ public class MapsActivity extends Activity {
     private MapRootView mapRootView;
     private DestinationList destinationList;
 
-    private Timer timer;
-
     private final MapData mapData = new MapData();
     private boolean destinationVisible;
+
+    private MarkerBrowser markerBrowser;
 
 
     @Override
@@ -62,23 +64,7 @@ public class MapsActivity extends Activity {
             }
         });
 
-        /*
-        timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mMap.animateCamera(CameraUpdateFactory.scrollBy(100, 0));
-                        mapRootView.onCameraMove(-100, 0);
-
-                    }
-                });
-            }
-        }, 0, 2000);
-        */
-
+        markerBrowser = (MarkerBrowser) findViewById(R.id.markerBrowser);
     }
 
     @Override
@@ -118,6 +104,9 @@ public class MapsActivity extends Activity {
         if (destinationVisible) {
             changeDestinationVisibility();
         }
+
+        markerBrowser.load(event.item);
+
         mapRootView.plainTo(mapData, event.item);
     }
 
@@ -125,6 +114,9 @@ public class MapsActivity extends Activity {
     @Subscribe
     public void stopEvent(StopEvent event) {
         mapRootView.plainDone(mapData);
+
+        markerBrowser.setVisibility(View.VISIBLE);
+        YoYo.with(Techniques.SlideInUp).duration(300).playOn(markerBrowser);
 
     }
 
