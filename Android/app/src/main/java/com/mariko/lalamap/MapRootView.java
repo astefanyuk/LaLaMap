@@ -14,10 +14,6 @@ import android.widget.RelativeLayout;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
-import com.squareup.otto.Subscribe;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class MapRootView extends RelativeLayout {
@@ -46,7 +42,7 @@ public class MapRootView extends RelativeLayout {
 
     public void plainDone(MapData mapData) {
 
-        mapData.map.animateCamera(CameraUpdateFactory.newLatLngZoom(airplane.getMarker().getPosition(), 5));
+        mapData.map.animateCamera(CameraUpdateFactory.newLatLngZoom(airplane.getDestinationMarkerItem().getPosition(), 5));
     }
 
 
@@ -55,7 +51,7 @@ public class MapRootView extends RelativeLayout {
         airplane.getMarker().setVisible(true);
 
         airplane.stopAnimation();
-        airplane.destinationMarkerItem = items.findByMapItem(item);
+        airplane.setDestinationMarkerItem(items.findByMapItem(item));
 
         airplane.startAnimation();
 

@@ -31,6 +31,7 @@ public class MarkerBrowser extends LinearLayout {
     }
 
     public void load(MapItem item) {
-        webView.loadUrl("https://www.youtube.com/results?search_query=" + item.key);
+        // webView.loadUrl("https://www.youtube.com/results?search_query=" + item.key);
+        webView.loadUrl("https://www.google.com.ua/search?q=Eiffel+Tower&es_sm=93&source=lnms&tbm=isch");
     }
 }

@@ -1,9 +1,12 @@
 package com.mariko.lalamap;
 
+import android.animation.ObjectAnimator;
 import android.graphics.Point;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.mariko.animation.AnimatorPath;
+import com.mariko.animation.PathEvaluator;
 import com.mariko.animation.PathPoint;
 
 /**
@@ -11,15 +14,30 @@ import com.mariko.animation.PathPoint;
  */
 public class MapMainItem extends MarkerItem {
 
-    public MarkerItem destinationMarkerItem;
+    private MarkerItem destinationMarkerItem;
 
     @Override
     protected void onEnd() {
         stopAnimation();
 
         destinationMarkerItem.stopAnimation();
-        destinationMarkerItem = null;
+        LatLng target = destinationMarkerItem.getPosition();
+
         GApp.sInstance.getBus().post(new MapsActivity.StopEvent(this.getPosition()));
+
+        AnimatorPath path = new AnimatorPath();
+        path.moveTo(getMarker().getPosition().latitude, getMarker().getPosition().longitude);
+        path.lineTo(target.latitude, target.longitude - 5);
+
+        ObjectAnimator anim = ObjectAnimator.ofObject(this, "AnimatedLocationLiner",
+                new PathEvaluator(), path.getPoints().toArray());
+
+        anim.setDuration(1000);
+        anim.start();
+    }
+
+    public void setAnimatedLocationLiner(PathPoint newLoc) {
+        marker.setPosition(new LatLng(newLoc.mX, newLoc.mY));
     }
 
     @Override
@@ -53,8 +71,30 @@ public class MapMainItem extends MarkerItem {
     }
 
     @Override
+    protected double getNextDistance(boolean latitude) {
+        return random.nextDouble() * 30;
+    }
+
+    @Override
     protected boolean canMovePoint(PathPoint newLoc) {
         LatLng target = getTargetPosition();
-        return Math.abs(newLoc.mX - target.latitude) > 2f || Math.abs(newLoc.mY - target.longitude) > 2f;
+        return Math.abs(newLoc.mX - target.latitude) > 10f || Math.abs(newLoc.mY - target.longitude) > 10f;
+    }
+
+    public MarkerItem getDestinationMarkerItem() {
+        return destinationMarkerItem;
+    }
+
+    public void setDestinationMarkerItem(MarkerItem value) {
+
+        if (this.destinationMarkerItem != null && this.destinationMarkerItem != value) {
+            this.destinationMarkerItem.startAnimation();
+        }
+
+        this.destinationMarkerItem = value;
+
+        if (this.destinationMarkerItem != null) {
+            this.destinationMarkerItem.startAnimation();
+        }
     }
 }

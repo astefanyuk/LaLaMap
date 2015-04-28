@@ -65,6 +65,14 @@ public class MarkerItem {
         return item.getScaleX() > 0 ? this.item.pointRightBottom : this.item.pointLeftTop;
     }
 
+    protected double getNextDistance(boolean latitude) {
+        if (latitude) {
+            return random.nextDouble() * (Math.abs(getSourcePosition().latitude - getTargetPosition().latitude) / 4.0f);
+        } else {
+            return random.nextDouble() * Math.abs(getSourcePosition().longitude - getTargetPosition().longitude) / 3.0f;
+        }
+    }
+
     public void startAnimation() {
 
         stopAnimation();
@@ -78,11 +86,9 @@ public class MarkerItem {
 
         LatLng position = marker.getPosition();
 
-        double latitudeDistance = random.nextDouble() * (Math.abs(sourcePosition.latitude - targetPosition.latitude) / 4.0f);
+        double endLatitude = position.latitude + (sourcePosition.latitude <= targetPosition.latitude ? 1 : -1) * getNextDistance(true);
 
-        double endLatitude = position.latitude + (sourcePosition.latitude <= targetPosition.latitude ? 1 : -1) * latitudeDistance;
-
-        double endLongitude = position.longitude + (sourcePosition.longitude <= targetPosition.longitude ? 1 : -1) * random.nextDouble() * (Math.abs(sourcePosition.longitude - targetPosition.longitude) / 3.0f);
+        double endLongitude = position.longitude + (sourcePosition.longitude <= targetPosition.longitude ? 1 : -1) * getNextDistance(false);
 
         AnimatorPath path = new AnimatorPath();
         path.moveTo(position.latitude, position.longitude);

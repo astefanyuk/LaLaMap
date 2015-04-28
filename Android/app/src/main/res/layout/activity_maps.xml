@@ -38,5 +38,12 @@
 
     </RelativeLayout>
 
+    <com.mariko.lalamap.MarkerBrowser
+        android:id="@+id/markerBrowser"
+        android:layout_alignParentRight="true"
+        android:visibility="gone"
+        android:layout_width="400dip"
+        android:layout_height="match_parent" />
+
 
 </RelativeLayout>

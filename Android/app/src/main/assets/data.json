@@ -2,6 +2,7 @@
   {
     "youtubeKey": "ZV9u5bPRSfo",
     "icon": "tower",
+    "key": "Eiffel Tower",
     "locationType": "Marker",
     "pointLeftTop": {
       "longitude": 2.2945,
@@ -14,6 +15,7 @@
   {
     "youtubeKey": "wDkZEUGRzMQ",
     "icon": "tiger",
+    "key": "tiger",
     "locationType": "Marker",
     "pointLeftTop": {
       "longitude": 23.049303,

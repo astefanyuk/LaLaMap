@@ -43,6 +43,7 @@ public class MapsActivity extends Activity {
 
     private final MapData mapData = new MapData();
     private boolean destinationVisible;
+    private boolean mapBrowserVisible;
 
     private MarkerBrowser markerBrowser;
 
@@ -73,7 +74,24 @@ public class MapsActivity extends Activity {
             changeDestinationVisibility();
             return;
         }
+
+        if (mapBrowserVisible) {
+            changeMapBrowserVisibility();
+            return;
+        }
+
         super.onBackPressed();
+    }
+
+
+    private void changeMapBrowserVisibility() {
+        markerBrowser.setVisibility(View.VISIBLE);
+        if (mapBrowserVisible) {
+            YoYo.with(Techniques.SlideOutRight).duration(300).playOn(markerBrowser);
+        } else {
+            YoYo.with(Techniques.SlideInRight).duration(300).playOn(markerBrowser);
+        }
+        mapBrowserVisible = !mapBrowserVisible;
     }
 
     private void changeDestinationVisibility() {
@@ -105,6 +123,10 @@ public class MapsActivity extends Activity {
             changeDestinationVisibility();
         }
 
+        if (mapBrowserVisible) {
+            changeMapBrowserVisibility();
+        }
+
         markerBrowser.load(event.item);
 
         mapRootView.plainTo(mapData, event.item);
@@ -115,8 +137,13 @@ public class MapsActivity extends Activity {
     public void stopEvent(StopEvent event) {
         mapRootView.plainDone(mapData);
 
-        markerBrowser.setVisibility(View.VISIBLE);
-        YoYo.with(Techniques.SlideInUp).duration(300).playOn(markerBrowser);
+        if (destinationVisible) {
+            changeDestinationVisibility();
+        }
+
+        if (!mapBrowserVisible) {
+            changeMapBrowserVisibility();
+        }
 
     }
 
