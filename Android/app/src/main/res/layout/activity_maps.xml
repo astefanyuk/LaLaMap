@@ -42,7 +42,7 @@
         android:id="@+id/markerBrowser"
         android:layout_alignParentRight="true"
         android:visibility="gone"
-        android:layout_width="400dip"
+        android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
 

@@ -15,6 +15,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.logging.Handler;
+
 
 public class MapRootView extends RelativeLayout {
 
@@ -40,9 +42,17 @@ public class MapRootView extends RelativeLayout {
 
     }
 
-    public void plainDone(MapData mapData) {
+    public void plainDone(final MapData mapData) {
 
         mapData.map.animateCamera(CameraUpdateFactory.newLatLngZoom(airplane.getDestinationMarkerItem().getPosition(), 5));
+
+        getHandler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mapData.map.animateCamera(CameraUpdateFactory.scrollBy(500, 0));
+            }
+        }, 2000);
+
     }
 
 
