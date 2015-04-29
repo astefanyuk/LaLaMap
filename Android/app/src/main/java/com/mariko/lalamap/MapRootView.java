@@ -49,7 +49,7 @@ public class MapRootView extends RelativeLayout {
         getHandler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                mapData.map.animateCamera(CameraUpdateFactory.scrollBy(500, 0));
+                mapData.map.animateCamera(CameraUpdateFactory.scrollBy(-500, 0));
             }
         }, 2000);
 

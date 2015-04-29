@@ -25,6 +25,9 @@ public class MarkerBrowser extends LinearLayout {
 
         final ViewFlipper flipper = (ViewFlipper) findViewById(R.id.flipper);
 
+        DestinationList destinationList = new DestinationList(context, null);
+        flipper.addView(destinationList);
+
         web = new WebView[3];
         for (int i = 0; i < web.length; i++) {
             web[i] = new WebView(context, null);

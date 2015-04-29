@@ -39,10 +39,8 @@ public class MapsActivity extends Activity {
     }
 
     private MapRootView mapRootView;
-    private DestinationList destinationList;
 
     private final MapData mapData = new MapData();
-    private boolean destinationVisible;
     private boolean mapBrowserVisible;
 
     private MarkerBrowser markerBrowser;
@@ -55,12 +53,10 @@ public class MapsActivity extends Activity {
         mapRootView = (MapRootView) findViewById(R.id.mapRootView);
         setupMap();
 
-        destinationList = (DestinationList) findViewById(R.id.destinationList);
-
         findViewById(R.id.showList).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                changeDestinationVisibility();
+                changeMapBrowserVisibility();
 
             }
         });
@@ -70,10 +66,6 @@ public class MapsActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        if (destinationVisible) {
-            changeDestinationVisibility();
-            return;
-        }
 
         if (mapBrowserVisible) {
             changeMapBrowserVisibility();
@@ -87,21 +79,11 @@ public class MapsActivity extends Activity {
     private void changeMapBrowserVisibility() {
         markerBrowser.setVisibility(View.VISIBLE);
         if (mapBrowserVisible) {
-            YoYo.with(Techniques.SlideOutRight).duration(300).playOn(markerBrowser);
+            YoYo.with(Techniques.SlideOutLeft).duration(300).playOn(markerBrowser);
         } else {
-            YoYo.with(Techniques.SlideInRight).duration(300).playOn(markerBrowser);
+            YoYo.with(Techniques.SlideInLeft).duration(300).playOn(markerBrowser);
         }
         mapBrowserVisible = !mapBrowserVisible;
-    }
-
-    private void changeDestinationVisibility() {
-        destinationList.setVisibility(View.VISIBLE);
-        if (destinationVisible) {
-            YoYo.with(Techniques.SlideOutDown).duration(300).playOn(destinationList);
-        } else {
-            YoYo.with(Techniques.SlideInUp).duration(300).playOn(destinationList);
-        }
-        destinationVisible = !destinationVisible;
     }
 
     @Override
@@ -119,9 +101,6 @@ public class MapsActivity extends Activity {
 
     @Subscribe
     public void destinationSelected(DestinationSelectedEvent event) {
-        if (destinationVisible) {
-            changeDestinationVisibility();
-        }
 
         if (mapBrowserVisible) {
             changeMapBrowserVisibility();
@@ -136,10 +115,6 @@ public class MapsActivity extends Activity {
     @Subscribe
     public void stopEvent(StopEvent event) {
         mapRootView.plainDone(mapData);
-
-        if (destinationVisible) {
-            changeDestinationVisibility();
-        }
 
         if (!mapBrowserVisible) {
             changeMapBrowserVisibility();
