@@ -28,6 +28,7 @@
   {
     "youtubeKey": "wDkZEUGRzMQ",
     "icon": "kit",
+	"key": "whale",
     "locationType": "Area",
     "pointLeftTop": {
       "longitude": 31.206592,
@@ -45,6 +46,7 @@
   {
     "youtubeKey": "wDkZEUGRzMQ",
     "icon": "pingvin",
+	"key": "penguin",
     "locationType": "Area",
     "pointLeftTop": {
       "longitude": -7.992628,

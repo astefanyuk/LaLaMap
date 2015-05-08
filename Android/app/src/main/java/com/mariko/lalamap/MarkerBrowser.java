@@ -10,12 +10,15 @@ import android.widget.LinearLayout;
 import android.widget.ViewFlipper;
 
 import java.net.URLEncoder;
+import java.util.logging.Handler;
 
 /**
  * Created by AStefaniuk on 27.04.2015.
  */
 public class MarkerBrowser extends LinearLayout {
 
+    private final DestinationList destinationList;
+    private final ViewFlipper flipper;
     private WebView[] web;
 
     public MarkerBrowser(Context context, AttributeSet attrs) {
@@ -23,9 +26,9 @@ public class MarkerBrowser extends LinearLayout {
 
         LayoutInflater.from(context).inflate(R.layout.marker_browser, this);
 
-        final ViewFlipper flipper = (ViewFlipper) findViewById(R.id.flipper);
+        flipper = (ViewFlipper) findViewById(R.id.flipper);
 
-        DestinationList destinationList = new DestinationList(context, null);
+        destinationList = new DestinationList(context, null);
         flipper.addView(destinationList);
 
         web = new WebView[3];
@@ -57,10 +60,12 @@ public class MarkerBrowser extends LinearLayout {
     }
 
     public void load(MapItem item) {
-        web[0].loadUrl("https://www.youtube.com/results?search_query=" + URLEncoder.encode(item.key));
-        web[1].loadUrl("https://www.google.com.ua/search?q=" + URLEncoder.encode(item.key) + "&es_sm=93&source=lnms&tbm=isch");
+        web[0].loadUrl("https://m.youtube.com/#/results?search_query=" + URLEncoder.encode(item.key));
+        web[1].loadUrl("https://www.google.com.ua/search?noj=1&site=imghp&tbm=isch&sa=1&oq=tig&q=" + URLEncoder.encode(item.key));
+        web[2].loadUrl("http://en.wikipedia.org/wiki/" + URLEncoder.encode(item.key.replace(" ", "_")));
 
-        //web2.loadUrl("https://uk.wikipedia.org/wiki/"  + URLEncoder.encode(item.key));
-        web[2].loadUrl("http://en.wikipedia.org/wiki/Eiffel_Tower");
+        if (flipper.getCurrentView() == destinationList) {
+            flipper.showNext();
+        }
     }
 }
