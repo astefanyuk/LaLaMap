@@ -12,45 +12,68 @@
         android:layout_height="match_parent">
 
 
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/title"
+            android:paddingLeft="10dip"
+            android:paddingRight="10dip"
             android:orientation="horizontal"
             android:background="#CCCCCC"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="54dip">
 
-            <ImageView
-                android:src="@drawable/back"
-                android:layout_width="44dip"
-                android:layout_height="44dip" />
-
-            <ImageView
-                android:src="@drawable/forward"
-                android:layout_width="44dip"
-                android:layout_height="44dip" />
-
-            <ImageView
-                android:src="@drawable/marker"
-                android:layout_width="44dip"
-                android:layout_height="66dip" />
-
-
-            <ImageView
-                android:src="@drawable/youtube"
+            <LinearLayout
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
                 android:layout_width="wrap_content"
-                android:layout_height="66dip" />
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/back"
+                    android:src="@drawable/back"
+                    android:layout_width="44dip"
+                    android:layout_height="44dip" />
+
+                <ImageView
+                    android:id="@+id/forward"
+                    android:layout_marginLeft="20dip"
+                    android:src="@drawable/forward"
+                    android:layout_width="44dip"
+                    android:layout_height="44dip" />
+
+                <ImageView
+                    android:id="@+id/marker"
+                    android:padding="5dip"
+                    android:layout_marginLeft="20dip"
+                    android:src="@drawable/marker"
+                    android:layout_width="44dip"
+                    android:layout_height="44dip" />
+
+
+                <ImageView
+                    android:id="@+id/youtube"
+                    android:padding="5dip"
+                    android:src="@drawable/youtube"
+                    android:layout_width="100dip"
+                    android:layout_height="44dip" />
+
+                <ImageView
+                    android:id="@+id/wikipedia"
+                    android:padding="5dip"
+                    android:src="@drawable/wikipedia"
+                    android:layout_width="44dip"
+                    android:layout_height="44dip" />
+
+            </LinearLayout>
 
             <ImageView
-                android:src="@drawable/wikipedia"
-                android:layout_width="44dip"
-                android:layout_height="44dip" />
-
-            <ImageView
+                android:id="@+id/close"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
                 android:src="@drawable/close"
                 android:layout_width="44dip"
                 android:layout_height="44dip" />
 
-        </LinearLayout>
+        </RelativeLayout>
 
         <ViewFlipper
             android:id="@+id/flipper"
