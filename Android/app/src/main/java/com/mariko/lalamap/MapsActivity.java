@@ -29,6 +29,14 @@ public class MapsActivity extends Activity {
         }
     }
 
+    public static class ShowBrowserEvent {
+        public final boolean show;
+
+        public ShowBrowserEvent(boolean show) {
+            this.show = show;
+        }
+    }
+
     public static class DestinationSelectedEvent {
         public final MapItem item;
 
@@ -56,7 +64,7 @@ public class MapsActivity extends Activity {
         findViewById(R.id.showList).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                changeMapBrowserVisibility();
+                GApp.sInstance.getBus().post(new ShowBrowserEvent(true));
 
             }
         });
@@ -120,6 +128,14 @@ public class MapsActivity extends Activity {
             changeMapBrowserVisibility();
         }
 
+    }
+
+    @Subscribe
+    public void showBrowserEvent(ShowBrowserEvent event) {
+        if (event.show == mapBrowserVisible) {
+            return;
+        }
+        changeMapBrowserVisibility();
     }
 
     private void setupMap() {

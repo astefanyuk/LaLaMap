@@ -11,7 +11,6 @@ import android.widget.LinearLayout;
 import android.widget.ViewFlipper;
 
 import java.net.URLEncoder;
-import java.util.logging.Handler;
 
 /**
  * Created by AStefaniuk on 27.04.2015.
@@ -22,6 +21,7 @@ public class MarkerBrowser extends LinearLayout {
     private ImageView forward;
     private ImageView marker;
     private ImageView youtube;
+    private ImageView gallery;
     private ImageView wikipedia;
     private ImageView close;
 
@@ -40,9 +40,10 @@ public class MarkerBrowser extends LinearLayout {
 
         this.marker = (ImageView) findViewById(R.id.marker);
         this.youtube = (ImageView) findViewById(R.id.youtube);
+        this.gallery = (ImageView) findViewById(R.id.gallery);
         this.wikipedia = (ImageView) findViewById(R.id.wikipedia);
 
-        webButtons = new ImageView[]{this.marker, this.youtube, this.wikipedia};
+        webButtons = new ImageView[]{this.youtube, this.gallery, this.wikipedia};
 
         this.close = (ImageView) findViewById(R.id.close);
 
@@ -57,32 +58,43 @@ public class MarkerBrowser extends LinearLayout {
             initWebView(web[i]);
 
             flipper.addView(web[i]);
+
+            final int index = i;
+
+            webButtons[i].setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showView(web[index]);
+                }
+            });
         }
+
+        this.close.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                GApp.sInstance.getBus().post(new MapsActivity.ShowBrowserEvent(false));
+            }
+        });
+
+        findViewById(R.id.tint).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                GApp.sInstance.getBus().post(new MapsActivity.ShowBrowserEvent(false));
+            }
+        });
 
         this.marker.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                setCurrentWebView(web[0]);
+                showView(destinationList);
             }
         });
 
-        this.youtube.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setCurrentWebView(web[1]);
-            }
-        });
-
-        this.wikipedia.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setCurrentWebView(web[2]);
-            }
-        });
+        showView(destinationList);
     }
 
-    private void setCurrentWebView(WebView webView) {
-        while (flipper.getCurrentView() != webView) {
+    private void showView(View view) {
+        while (flipper.getCurrentView() != view) {
             flipper.showNext();
         }
         update();
@@ -96,6 +108,8 @@ public class MarkerBrowser extends LinearLayout {
                 webButtons[i].setBackgroundResource(0);
             }
         }
+
+        marker.setBackgroundResource(flipper.getCurrentView() == destinationList ? R.drawable.marker_browser_selected_toolbar : 0);
     }
 
     private void initWebView(WebView webView) {
