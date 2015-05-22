@@ -6,6 +6,7 @@ import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.WindowManager;
 
+import com.mariko.data.MapController;
 import com.squareup.otto.Bus;
 
 /**

@@ -6,6 +6,7 @@ import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.badoo.mobile.util.WeakHandler;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -46,6 +47,15 @@ public class MapsActivity extends Activity {
 
     }
 
+    private WeakHandler handler = new WeakHandler();
+    private final Runnable changeBrowserVisibilityRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if(!mapBrowserVisible){
+                changeMapBrowserVisibility();
+            }
+        }
+    };
     private MapRootView mapRootView;
 
     private final MapData mapData = new MapData();
@@ -85,6 +95,7 @@ public class MapsActivity extends Activity {
 
 
     private void changeMapBrowserVisibility() {
+        handler.removeCallbacks(changeBrowserVisibilityRunnable);
         markerBrowser.setVisibility(View.VISIBLE);
         if (mapBrowserVisible) {
             YoYo.with(Techniques.SlideOutLeft).duration(300).playOn(markerBrowser);
@@ -104,6 +115,7 @@ public class MapsActivity extends Activity {
     @Override
     protected void onPause() {
         GApp.sInstance.getBus().unregister(this);
+        handler.removeCallbacks(changeBrowserVisibilityRunnable);
         super.onPause();
     }
 
@@ -124,8 +136,9 @@ public class MapsActivity extends Activity {
     public void stopEvent(StopEvent event) {
         mapRootView.plainDone(mapData);
 
+        handler.removeCallbacks(changeBrowserVisibilityRunnable);
         if (!mapBrowserVisible) {
-            changeMapBrowserVisibility();
+            handler.postDelayed(changeBrowserVisibilityRunnable, 4000);
         }
 
     }
@@ -148,7 +161,7 @@ public class MapsActivity extends Activity {
             if (mapData.map != null) {
 
                 mapData.map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-                //mapData.map.getUiSettings().setRotateGesturesEnabled(false);
+                mapData.map.getUiSettings().setRotateGesturesEnabled(false);
                 //mapData.map.getUiSettings().setZoomGesturesEnabled(false);
 
 

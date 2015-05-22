@@ -12,8 +12,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.mariko.animation.AnimatorPath;
 import com.mariko.animation.PathEvaluator;
 import com.mariko.animation.PathPoint;
-
-import org.apache.http.util.LangUtils;
+import com.mariko.data.MapController;
 
 import java.util.Random;
 
