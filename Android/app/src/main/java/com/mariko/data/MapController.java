@@ -15,18 +15,9 @@ import retrofit.RestAdapter;
  */
 public class MapController {
 
-    private static final String API_URL = "https://dl.dropboxusercontent.com/u/8155438";
-
     public MapItemList items = new MapItemList();
 
     public MapController() {
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                loadData();
-            }
-        }).start();
 
 
         /*
@@ -45,18 +36,7 @@ public class MapController {
         */
     }
 
-    private void loadData(){
-        RestAdapter restAdapter = new RestAdapter.Builder()
-                .setEndpoint(API_URL)
-                .build();
-
-        MapItemsService mapItemsService = restAdapter.create(MapItemsService.class);
-
-        MapItemList mapItemList = mapItemsService.getList();
-        for(MapItem item : mapItemList){
-            item.init();
-        }
-
-        items = mapItemList;
+    public void setItems(MapItemList items){
+        this.items = items;
     }
 }

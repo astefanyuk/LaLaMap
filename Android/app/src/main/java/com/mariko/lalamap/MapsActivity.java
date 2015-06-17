@@ -14,11 +14,17 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.mariko.data.Service;
 import com.mariko.map.MapFragmentEx;
 import com.mariko.map.MapStateListener;
 import com.squareup.otto.Subscribe;
 
+import java.nio.channels.GatheringByteChannel;
 import java.util.Timer;
+
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 public class MapsActivity extends Activity {
 
@@ -168,7 +174,14 @@ public class MapsActivity extends Activity {
                 mapFragment.getMapAsync(new OnMapReadyCallback() {
                     @Override
                     public void onMapReady(GoogleMap googleMap) {
-                        mapRootView.mapReady(mapData);
+                        new Service().getMapItemList().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Action1<MapItemList>() {
+                            @Override
+                            public void call(MapItemList mapItems) {
+                                GApp.sInstance.getMapController().setItems(mapItems);
+                                mapRootView.mapReady(mapData);
+                            }
+                        });
+
                     }
                 });
 
