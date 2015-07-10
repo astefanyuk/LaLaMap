@@ -1,12 +1,20 @@
 package com.mariko.lalamap;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ImageView;
 
 import com.badoo.mobile.util.WeakHandler;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
+import com.bumptech.glide.request.target.ImageViewTarget;
+import com.bumptech.glide.request.target.Target;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -179,6 +187,28 @@ public class MapsActivity extends Activity {
                             public void call(MapItemList mapItems) {
                                 GApp.sInstance.getMapController().setItems(mapItems);
                                 mapRootView.mapReady(mapData);
+
+                                Service service = new Service();
+                                for(int i=0; i<mapItems.size(); i++){
+
+                                    final MapItem item = mapItems.get(i);
+
+                                    Glide.with(MapsActivity.this).load(service.getImageUrl(item)).asBitmap().listener(new RequestListener<String, Bitmap>() {
+                                        @Override
+                                        public boolean onException(Exception e, String model, Target<Bitmap> target, boolean isFirstResource) {
+                                            return false;
+                                        }
+
+                                        @Override
+                                        public boolean onResourceReady(Bitmap resource, String model, Target<Bitmap> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                                            item.init(resource);
+
+                                            mapRootView.addItem(item);
+
+                                            return false;
+                                        }
+                                    }).into(200, 200);
+                                }
                             }
                         });
 

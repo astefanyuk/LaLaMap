@@ -3,6 +3,7 @@ package com.mariko.lalamap;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -69,23 +70,22 @@ public class MapRootView extends RelativeLayout {
 
     public void mapReady(MapData mapData) {
 
-        for(MapItem item : GApp.sInstance.getMapController().items){
-
-            MarkerItem markerItem = new MarkerItem();
-
-            markerItem.setItem(GApp.sInstance.getMapController(), item, mapData.map);
-
-            items.add(markerItem);
-        }
-
         initMainItem(mapData);
 
         start();
     }
 
+    public void addItem(MapItem item){
+        MarkerItem markerItem = new MarkerItem();
+
+        markerItem.setItem(GApp.sInstance.getMapController(), item, map);
+
+        items.add(markerItem);
+    }
+
     private void initMainItem(MapData mapData) {
         MapItem item = new MapItem();
-        item.icon = "airplane";
+
         item.locationType = MapItem.LocationType.Area;
         item.width = 200;
 
@@ -93,7 +93,7 @@ public class MapRootView extends RelativeLayout {
 
         item.pointLeftTop = new LatLng(0,0);
 
-        item.init();
+        item.init(BitmapFactory.decodeResource(GApp.sInstance.getResources(), R.drawable.airplane));
 
         airplane = new MapMainItem();
         airplane.setItem(GApp.sInstance.getMapController(), item, mapData.map);

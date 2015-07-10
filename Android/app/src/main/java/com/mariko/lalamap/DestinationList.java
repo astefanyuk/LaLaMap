@@ -12,6 +12,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.mariko.data.Service;
+
 import java.util.ArrayList;
 
 /**
@@ -42,8 +45,8 @@ public class DestinationList extends LinearLayout {
                 DestinationItemHolder destinationItemHolder = (DestinationItemHolder) holder;
 
                 destinationItemHolder.item = item;
-                destinationItemHolder.image.setImageBitmap(item.getBitmap());
-               // destinationItemHolder.title.setText(item.icon);
+                Glide.with(getContext()).load(new Service().getImageUrl(item)).into(destinationItemHolder.image);
+
             }
 
             @Override
