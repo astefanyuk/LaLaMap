@@ -19,13 +19,11 @@ public class MarkerBrowser extends LinearLayout {
 
     private ImageView back;
     private ImageView forward;
-    private ImageView marker;
     private ImageView youtube;
     private ImageView gallery;
     private ImageView wikipedia;
     private ImageView close;
 
-    private final DestinationList destinationList;
     private final ViewFlipper flipper;
     private WebView[] web;
     private ImageView[] webButtons;
@@ -38,7 +36,6 @@ public class MarkerBrowser extends LinearLayout {
         this.back = (ImageView) findViewById(R.id.back);
         this.forward = (ImageView) findViewById(R.id.forward);
 
-        this.marker = (ImageView) findViewById(R.id.marker);
         this.youtube = (ImageView) findViewById(R.id.youtube);
         this.gallery = (ImageView) findViewById(R.id.gallery);
         this.wikipedia = (ImageView) findViewById(R.id.wikipedia);
@@ -48,9 +45,6 @@ public class MarkerBrowser extends LinearLayout {
         this.close = (ImageView) findViewById(R.id.close);
 
         flipper = (ViewFlipper) findViewById(R.id.flipper);
-
-        destinationList = new DestinationList(context, null);
-        flipper.addView(destinationList);
 
         web = new WebView[3];
         for (int i = 0; i < web.length; i++) {
@@ -82,15 +76,6 @@ public class MarkerBrowser extends LinearLayout {
                 GApp.sInstance.getBus().post(new MapsActivity.ShowBrowserEvent(false));
             }
         });
-
-        this.marker.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showView(destinationList);
-            }
-        });
-
-        showView(destinationList);
     }
 
     private void showView(View view) {
@@ -108,8 +93,6 @@ public class MarkerBrowser extends LinearLayout {
                 webButtons[i].setBackgroundResource(0);
             }
         }
-
-        marker.setBackgroundResource(flipper.getCurrentView() == destinationList ? R.drawable.marker_browser_selected_toolbar : 0);
     }
 
     private void initWebView(WebView webView) {
@@ -127,10 +110,6 @@ public class MarkerBrowser extends LinearLayout {
         web[0].loadUrl("https://m.youtube.com/#/results?search_query=" + URLEncoder.encode(item.key));
         web[1].loadUrl("https://www.google.com.ua/search?noj=1&site=imghp&tbm=isch&sa=1&oq=tig&q=" + URLEncoder.encode(item.key));
         web[2].loadUrl("http://en.wikipedia.org/wiki/" + URLEncoder.encode(item.key.replace(" ", "_")));
-
-        if (flipper.getCurrentView() == destinationList) {
-            flipper.showNext();
-        }
 
         update();
     }

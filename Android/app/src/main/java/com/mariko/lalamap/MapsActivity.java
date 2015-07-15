@@ -4,20 +4,13 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.View;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.widget.ImageView;
 
 import com.badoo.mobile.util.WeakHandler;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.BitmapImageViewTarget;
-import com.bumptech.glide.request.target.ImageViewTarget;
 import com.bumptech.glide.request.target.Target;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -26,9 +19,6 @@ import com.mariko.data.Service;
 import com.mariko.map.MapFragmentEx;
 import com.mariko.map.MapStateListener;
 import com.squareup.otto.Subscribe;
-
-import java.nio.channels.GatheringByteChannel;
-import java.util.Timer;
 
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -65,16 +55,19 @@ public class MapsActivity extends Activity {
     private final Runnable changeBrowserVisibilityRunnable = new Runnable() {
         @Override
         public void run() {
-            if(!mapBrowserVisible){
-                changeMapBrowserVisibility();
+            if(!markerBrowserVisible){
+                changeBrowserVisibility();
             }
         }
     };
     private MapRootView mapRootView;
 
     private final MapData mapData = new MapData();
-    private boolean mapBrowserVisible;
+    private boolean destinationListVisible;
+    private boolean markerBrowserVisible;
 
+    //private MarkerBrowser markerBrowser;
+    private DestinationList destinationList;
     private MarkerBrowser markerBrowser;
 
 
@@ -93,14 +86,22 @@ public class MapsActivity extends Activity {
             }
         });
 
+        destinationList = (DestinationList) findViewById(R.id.destinationList);
+
+        //markerBrowser = (MarkerBrowser) findViewById(R.id.markerBrowser);
         markerBrowser = (MarkerBrowser) findViewById(R.id.markerBrowser);
     }
 
     @Override
     public void onBackPressed() {
 
-        if (mapBrowserVisible) {
-            changeMapBrowserVisibility();
+        if (destinationListVisible) {
+            changeDestinationListVisibility();
+            return;
+        }
+
+        if(markerBrowserVisible){
+            changeBrowserVisibility();
             return;
         }
 
@@ -108,15 +109,25 @@ public class MapsActivity extends Activity {
     }
 
 
-    private void changeMapBrowserVisibility() {
+    private void changeDestinationListVisibility() {
+        destinationList.setVisibility(View.VISIBLE);
+        if (destinationListVisible) {
+            YoYo.with(Techniques.SlideOutLeft).duration(300).playOn(destinationList);
+        } else {
+            YoYo.with(Techniques.ZoomInUp).duration(300).playOn(destinationList);
+        }
+        destinationListVisible = !destinationListVisible;
+    }
+
+    private void changeBrowserVisibility() {
         handler.removeCallbacks(changeBrowserVisibilityRunnable);
         markerBrowser.setVisibility(View.VISIBLE);
-        if (mapBrowserVisible) {
+        if (markerBrowserVisible) {
             YoYo.with(Techniques.SlideOutLeft).duration(300).playOn(markerBrowser);
         } else {
-            YoYo.with(Techniques.SlideInLeft).duration(300).playOn(markerBrowser);
+            YoYo.with(Techniques.ZoomInUp).duration(300).playOn(markerBrowser);
         }
-        mapBrowserVisible = !mapBrowserVisible;
+        markerBrowserVisible = !markerBrowserVisible;
     }
 
     @Override
@@ -136,8 +147,8 @@ public class MapsActivity extends Activity {
     @Subscribe
     public void destinationSelected(DestinationSelectedEvent event) {
 
-        if (mapBrowserVisible) {
-            changeMapBrowserVisibility();
+        if (destinationListVisible) {
+            changeDestinationListVisibility();
         }
 
         markerBrowser.load(event.item);
@@ -151,7 +162,7 @@ public class MapsActivity extends Activity {
         mapRootView.plainDone(mapData);
 
         handler.removeCallbacks(changeBrowserVisibilityRunnable);
-        if (!mapBrowserVisible) {
+        if (!destinationListVisible) {
             handler.postDelayed(changeBrowserVisibilityRunnable, 4000);
         }
 
@@ -159,10 +170,10 @@ public class MapsActivity extends Activity {
 
     @Subscribe
     public void showBrowserEvent(ShowBrowserEvent event) {
-        if (event.show == mapBrowserVisible) {
+        if (event.show == destinationListVisible) {
             return;
         }
-        changeMapBrowserVisibility();
+        changeDestinationListVisibility();
     }
 
     private void setupMap() {
