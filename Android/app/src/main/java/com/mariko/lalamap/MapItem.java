@@ -45,13 +45,6 @@ public class MapItem {
 
     }
 
-
-    public void init() {
-
-        int iconResourceId = GApp.sInstance.getResources().getIdentifier(icon, "drawable", GApp.sInstance.getPackageName());
-        init(BitmapFactory.decodeResource(GApp.sInstance.getResources(), iconResourceId));
-    }
-
     public void init(Bitmap bitmap) {
         this.drawable = bitmap;
         this.height = (int) (drawable.getHeight() * width * 1.0f / drawable.getWidth());
