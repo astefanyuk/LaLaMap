@@ -20,6 +20,7 @@ import com.mariko.map.MapFragmentEx;
 import com.mariko.map.MapStateListener;
 import com.squareup.otto.Subscribe;
 
+import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
@@ -193,9 +194,21 @@ public class MapsActivity extends Activity {
                 mapFragment.getMapAsync(new OnMapReadyCallback() {
                     @Override
                     public void onMapReady(GoogleMap googleMap) {
-                        new Service().getMapItemList().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Action1<MapItemList>() {
+
+                        new Service().getMapItemList().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<MapItemList>() {
                             @Override
-                            public void call(MapItemList mapItems) {
+                            public void onCompleted() {
+
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                //TODO: display error
+                            }
+
+                            @Override
+                            public void onNext(MapItemList mapItems) {
+
                                 GApp.sInstance.getMapController().setItems(mapItems);
                                 mapRootView.mapReady(mapData);
 
@@ -222,7 +235,6 @@ public class MapsActivity extends Activity {
                                 }
                             }
                         });
-
                     }
                 });
 

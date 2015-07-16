@@ -4,6 +4,7 @@ import com.mariko.lalamap.MapItem;
 import com.mariko.lalamap.MapItemList;
 import com.mariko.lalamap.MediaItem;
 
+import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 import retrofit.http.GET;
 import retrofit.http.Query;
@@ -58,12 +59,24 @@ public class Service {
     }
 
     public String getImageUrl(MapItem item){
-        return API_URL + "/" + item.icon + ".png";
+        return API_URL + "/images/" + item.icon + ".png";
     }
 
     public Observable<WikiData> getWiki(String data){
+
+        RequestInterceptor requestInterceptor = new RequestInterceptor() {
+
+            @Override
+            public void intercept(RequestInterceptor.RequestFacade request) {
+                request.addHeader("Accept", "application/json");
+                int maxAge = 60 * 60;
+                request.addHeader("Cache-Control", "public, max-age=" + maxAge);
+            }
+        };
+
         RestAdapter restAdapter = new RestAdapter.Builder()
                 .setEndpoint("https://en.wikipedia.org")
+                .setRequestInterceptor(requestInterceptor)
                 .build();
 
         WikiService service = restAdapter.create(WikiService.class);
@@ -72,9 +85,6 @@ public class Service {
 
     }
 
-    /**
-     * Created by AStefaniuk on 16.07.2015.
-     */
     public static interface WikiService {
         @GET("/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=")
         Observable<WikiData> getData(@Query("titles") String title);
