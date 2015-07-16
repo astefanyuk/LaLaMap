@@ -1,4 +1,4 @@
-package com.mariko.lalamap;
+package com.mariko.data;
 
 import java.util.ArrayList;
 

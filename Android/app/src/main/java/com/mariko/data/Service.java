@@ -1,9 +1,5 @@
 package com.mariko.data;
 
-import com.mariko.lalamap.MapItem;
-import com.mariko.lalamap.MapItemList;
-import com.mariko.lalamap.MediaItem;
-
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 import retrofit.http.GET;

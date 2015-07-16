@@ -1,7 +1,6 @@
 package com.mariko.lalamap;
 
 import android.content.Context;
-import android.content.res.Configuration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -13,21 +12,20 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.mariko.data.MapItem;
 import com.mariko.data.Service;
-
-import java.util.ArrayList;
 
 /**
  * Created by AStefaniuk on 20.04.2015.
  */
-public class DestinationList extends LinearLayout {
+public class MarkerList extends LinearLayout {
 
     private RecyclerView list;
 
-    public DestinationList(Context context, AttributeSet attrs) {
+    public MarkerList(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        LayoutInflater.from(context).inflate(R.layout.destination_selector, this);
+        LayoutInflater.from(context).inflate(R.layout.marker_list, this);
 
         list = (RecyclerView) findViewById(R.id.list);
 
@@ -36,7 +34,7 @@ public class DestinationList extends LinearLayout {
         list.setAdapter(new RecyclerView.Adapter() {
             @Override
             public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-                return new DestinationItemHolder(LayoutInflater.from(getContext()).inflate(R.layout.destination_item, null));
+                return new DestinationItemHolder(LayoutInflater.from(getContext()).inflate(R.layout.marker_item, null));
             }
 
             @Override

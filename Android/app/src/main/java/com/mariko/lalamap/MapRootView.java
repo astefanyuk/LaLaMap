@@ -15,8 +15,7 @@ import android.widget.RelativeLayout;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
-
-import java.util.logging.Handler;
+import com.mariko.data.MapItem;
 
 
 public class MapRootView extends RelativeLayout {

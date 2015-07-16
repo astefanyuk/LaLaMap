@@ -1,4 +1,4 @@
-package com.mariko.lalamap;
+package com.mariko.data;
 
 /**
  * Created by AStefaniuk on 16.07.2015.

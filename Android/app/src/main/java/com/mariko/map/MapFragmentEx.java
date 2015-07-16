@@ -31,7 +31,6 @@ public class MapFragmentEx extends MapFragment {
                     mDetector.onTouchEvent(event);
                 }
 
-
                 return super.dispatchTouchEvent(event);
             }
 

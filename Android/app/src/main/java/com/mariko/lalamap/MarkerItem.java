@@ -13,6 +13,7 @@ import com.mariko.animation.AnimatorPath;
 import com.mariko.animation.PathEvaluator;
 import com.mariko.animation.PathPoint;
 import com.mariko.data.MapController;
+import com.mariko.data.MapItem;
 
 import java.util.Random;
 

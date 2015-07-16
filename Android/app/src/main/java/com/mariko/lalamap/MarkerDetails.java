@@ -1,6 +1,8 @@
 package com.mariko.lalamap;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -12,27 +14,31 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.mariko.data.MapItem;
+import com.mariko.data.MediaItem;
 import com.mariko.data.Service;
 import com.mariko.data.WikiData;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 /**
  * Created by AStefaniuk on 27.04.2015.
  */
-public class MarkerBrowser extends LinearLayout {
+public class MarkerDetails extends LinearLayout {
 
     private final RecyclerView list;
     private final TextView title;
     private final TextView body;
 
-    public MarkerBrowser(Context context, AttributeSet attrs) {
+    public MarkerDetails(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        LayoutInflater.from(context).inflate(R.layout.marker_browser, this);
+        LayoutInflater.from(context).inflate(R.layout.marker_details, this);
 
         list = (RecyclerView) findViewById(R.id.list);
         title = (TextView) findViewById(R.id.title);
@@ -64,6 +70,19 @@ public class MarkerBrowser extends LinearLayout {
             @Override
             public int getItemCount() {
                 return item == null ? 0 : item.images.size();
+            }
+        });
+
+        findViewById(R.id.youtube).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                try {
+                    intent.setData(Uri.parse("https://www.youtube.com/results?search_query=" + URLEncoder.encode(item.key, "UTF-8")));
+                    getContext().startActivity(intent);
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }

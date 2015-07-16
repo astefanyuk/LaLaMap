@@ -1,5 +1,7 @@
 package com.mariko.lalamap;
 
+import com.mariko.data.MapItem;
+
 import java.util.ArrayList;
 
 /**

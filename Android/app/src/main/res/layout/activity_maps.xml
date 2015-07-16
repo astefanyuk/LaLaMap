@@ -14,14 +14,14 @@
         android:layout_height="match_parent" />
 
 
-    <com.mariko.lalamap.MarkerBrowser
+    <com.mariko.lalamap.MarkerDetails
         android:id="@+id/markerBrowser"
         android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
 
-    <com.mariko.lalamap.DestinationList
+    <com.mariko.lalamap.MarkerList
         android:id="@+id/destinationList"
         android:layout_margin="64dip"
         android:visibility="gone"

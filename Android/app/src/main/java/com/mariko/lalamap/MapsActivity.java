@@ -15,6 +15,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.mariko.data.MapItem;
+import com.mariko.data.MapItemList;
 import com.mariko.data.Service;
 import com.mariko.map.MapFragmentEx;
 import com.mariko.map.MapStateListener;
@@ -22,7 +24,6 @@ import com.squareup.otto.Subscribe;
 
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 public class MapsActivity extends Activity {
@@ -68,8 +69,8 @@ public class MapsActivity extends Activity {
     private boolean markerBrowserVisible;
 
     //private MarkerBrowser markerBrowser;
-    private DestinationList destinationList;
-    private MarkerBrowser markerBrowser;
+    private MarkerList markerList;
+    private MarkerDetails markerDetails;
 
 
     @Override
@@ -87,10 +88,10 @@ public class MapsActivity extends Activity {
             }
         });
 
-        destinationList = (DestinationList) findViewById(R.id.destinationList);
+        markerList = (MarkerList) findViewById(R.id.destinationList);
 
         //markerBrowser = (MarkerBrowser) findViewById(R.id.markerBrowser);
-        markerBrowser = (MarkerBrowser) findViewById(R.id.markerBrowser);
+        markerDetails = (MarkerDetails) findViewById(R.id.markerBrowser);
     }
 
     @Override
@@ -111,22 +112,22 @@ public class MapsActivity extends Activity {
 
 
     private void changeDestinationListVisibility() {
-        destinationList.setVisibility(View.VISIBLE);
+        markerList.setVisibility(View.VISIBLE);
         if (destinationListVisible) {
-            YoYo.with(Techniques.SlideOutLeft).duration(300).playOn(destinationList);
+            YoYo.with(Techniques.SlideOutLeft).duration(300).playOn(markerList);
         } else {
-            YoYo.with(Techniques.ZoomInUp).duration(300).playOn(destinationList);
+            YoYo.with(Techniques.ZoomInUp).duration(300).playOn(markerList);
         }
         destinationListVisible = !destinationListVisible;
     }
 
     private void changeBrowserVisibility() {
         handler.removeCallbacks(changeBrowserVisibilityRunnable);
-        markerBrowser.setVisibility(View.VISIBLE);
+        markerDetails.setVisibility(View.VISIBLE);
         if (markerBrowserVisible) {
-            YoYo.with(Techniques.SlideOutLeft).duration(300).playOn(markerBrowser);
+            YoYo.with(Techniques.SlideOutLeft).duration(300).playOn(markerDetails);
         } else {
-            YoYo.with(Techniques.ZoomInUp).duration(300).playOn(markerBrowser);
+            YoYo.with(Techniques.ZoomInUp).duration(300).playOn(markerDetails);
         }
         markerBrowserVisible = !markerBrowserVisible;
     }
@@ -152,7 +153,7 @@ public class MapsActivity extends Activity {
             changeDestinationListVisibility();
         }
 
-        markerBrowser.load(event.item);
+        markerDetails.load(event.item);
 
         mapRootView.plainTo(mapData, event.item);
     }
