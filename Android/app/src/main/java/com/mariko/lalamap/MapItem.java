@@ -1,19 +1,12 @@
 package com.mariko.lalamap;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.RotateDrawable;
-import android.util.Log;
-import android.util.TypedValue;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.Target;
 import com.google.android.gms.maps.model.LatLng;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by AStefaniuk on 06.03.2015.
@@ -34,6 +27,7 @@ public class MapItem {
     private transient float scaleX = 1.0f;
     public transient boolean supportsRotation = true;
 
+    public List<MediaItem> images = new ArrayList<>();
 
     public static enum LocationType {
         Marker /*Like Google Map Marker*/,

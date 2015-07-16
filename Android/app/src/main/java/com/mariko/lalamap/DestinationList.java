@@ -45,7 +45,7 @@ public class DestinationList extends LinearLayout {
                 DestinationItemHolder destinationItemHolder = (DestinationItemHolder) holder;
 
                 destinationItemHolder.item = item;
-                Glide.with(getContext()).load(new Service().getImageUrl(item)).into(destinationItemHolder.image);
+                Glide.with(getContext()).load(new Service().getImageUrl(item)).fitCenter().into(destinationItemHolder.image);
 
             }
 
