@@ -22,6 +22,7 @@ public class MarkerList extends LinearLayout {
 
     private RecyclerView list;
 
+
     public MarkerList(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -52,6 +53,13 @@ public class MarkerList extends LinearLayout {
                 return GApp.sInstance.getMapController().items.size();
             }
         });
+
+
+    }
+
+
+    public void mapReady() {
+        list.getAdapter().notifyDataSetChanged();
     }
 
     private static class DestinationItemHolder extends android.support.v7.widget.RecyclerView.ViewHolder {

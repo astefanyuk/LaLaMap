@@ -1,16 +1,16 @@
 package com.mariko.lalamap;
 
+import android.animation.IntEvaluator;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.badoo.mobile.util.WeakHandler;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
-import com.daimajia.androidanimations.library.Techniques;
-import com.daimajia.androidanimations.library.YoYo;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -92,7 +92,43 @@ public class MapsActivity extends Activity {
 
         //markerBrowser = (MarkerBrowser) findViewById(R.id.markerBrowser);
         markerDetails = (MarkerDetails) findViewById(R.id.markerBrowser);
+
+        /*
+        markerList.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+
+                AnimatorSet animatorSet = new AnimatorSet();
+
+                ValueAnimator translationHeight = ValueAnimator.ofObject(new HeightEvaluator(markerList), markerList.getWidth(), 400);
+                translationHeight.setDuration(300).setInterpolator(new AccelerateDecelerateInterpolator());
+
+                animatorSet.play(translationHeight).with(translationHeight);
+
+                return false;
+            }
+        });
+        */
     }
+
+    private static class HeightEvaluator extends IntEvaluator {
+
+        private View v;
+
+        public HeightEvaluator(View v) {
+            this.v = v;
+        }
+
+        @Override
+        public Integer evaluate(float fraction, Integer startValue, Integer endValue) {
+            int num = super.evaluate(fraction, startValue, endValue);
+            ViewGroup.LayoutParams params = v.getLayoutParams();
+            params.width = num;
+            v.setLayoutParams(params);
+            return num;
+        }
+    }
+
 
     @Override
     public void onBackPressed() {
@@ -112,6 +148,7 @@ public class MapsActivity extends Activity {
 
 
     private void changeDestinationListVisibility() {
+        /*
         markerList.setVisibility(View.VISIBLE);
         if (destinationListVisible) {
             YoYo.with(Techniques.SlideOutLeft).duration(300).playOn(markerList);
@@ -119,9 +156,11 @@ public class MapsActivity extends Activity {
             YoYo.with(Techniques.ZoomInUp).duration(300).playOn(markerList);
         }
         destinationListVisible = !destinationListVisible;
+        */
     }
 
     private void changeBrowserVisibility() {
+        /*
         handler.removeCallbacks(changeBrowserVisibilityRunnable);
         markerDetails.setVisibility(View.VISIBLE);
         if (markerBrowserVisible) {
@@ -130,6 +169,7 @@ public class MapsActivity extends Activity {
             YoYo.with(Techniques.ZoomInUp).duration(300).playOn(markerDetails);
         }
         markerBrowserVisible = !markerBrowserVisible;
+        */
     }
 
     @Override
@@ -212,6 +252,8 @@ public class MapsActivity extends Activity {
 
                                 GApp.sInstance.getMapController().setItems(mapItems);
                                 mapRootView.mapReady(mapData);
+
+                                markerList.mapReady();
 
                                 Service service = new Service();
                                 for(int i=0; i<mapItems.size(); i++){
