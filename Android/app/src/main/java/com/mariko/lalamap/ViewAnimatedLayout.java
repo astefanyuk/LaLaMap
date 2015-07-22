@@ -16,15 +16,19 @@ public class ViewAnimatedLayout extends RelativeLayout {
     }
 
     private void showInternal(ViewAnimated view, boolean show) {
-        view.show(show ? 0 : -(view.getMeasuredWidth() - 100));
+        showInternal(view, show, true);
+    }
+
+    private void showInternal(ViewAnimated view, boolean show, boolean animated) {
+        view.show(show ? 0 : -(view.getMeasuredWidth() - 100), animated);
     }
 
     public boolean isMainVisible() {
-        return mainView.getTranslationX() == 0;
+        return this.getVisibility() == View.VISIBLE && mainView.getVisibility() == View.VISIBLE && mainView.getTranslationX() == 0;
     }
 
     public boolean isDetailsVisible() {
-        return detailsView.getTranslationX() == 0;
+        return this.getVisibility() == View.VISIBLE && detailsView.getVisibility() == View.VISIBLE && detailsView.getTranslationX() == 0;
     }
 
     public void add(int width, View main, View details) {
@@ -40,6 +44,9 @@ public class ViewAnimatedLayout extends RelativeLayout {
         mainView.getLayoutParams().width = width;
         detailsView.getLayoutParams().width = 3 * width;
         detailsView.setPadding(width - mainView.getShadowWidth(), 0, 0, 0);
+
+        mainView.requestLayout();
+        detailsView.requestLayout();
 
         mainView.setListener(new ViewAnimated.Listener() {
             @Override
@@ -64,8 +71,8 @@ public class ViewAnimatedLayout extends RelativeLayout {
         });
     }
 
-    public void show(boolean show, boolean details) {
-        showInternal(details ? detailsView : mainView, show);
+    public void show(boolean show, boolean details, boolean animated) {
+        showInternal(details ? detailsView : mainView, show, animated);
     }
 
     public void show(boolean show) {

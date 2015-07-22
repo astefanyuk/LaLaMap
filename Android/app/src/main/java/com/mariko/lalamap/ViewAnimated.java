@@ -85,21 +85,39 @@ public class ViewAnimated extends RelativeLayout {
         ((ViewGroup) findViewById(R.id.viewRoot)).addView(mainView, 0);
     }
 
-    public void show(int width) {
+    public void show(int x) {
+        show(x, true);
+    }
 
-        if (animatorSet != null && animatorSet.isRunning()) {
-            return;
-        }
+    public void show(int x, boolean animated) {
 
-        if (animationWidth == null || width != animationWidth) {
-
-            this.animationWidth = width;
+        if (!animated) {
 
             if (animatorSet != null) {
                 animatorSet.cancel();
             }
 
-            ValueAnimator translationHeight = ObjectAnimator.ofFloat(this, "translationX", getTranslationX(), width);
+            animatorSet = null;
+            this.animationWidth = x;
+
+            setTranslationX(x);
+
+            return;
+        }
+
+        if (animatorSet != null && animatorSet.isRunning()) {
+            return;
+        }
+
+        if (animationWidth == null || x != animationWidth) {
+
+            this.animationWidth = x;
+
+            if (animatorSet != null) {
+                animatorSet.cancel();
+            }
+
+            ValueAnimator translationHeight = ObjectAnimator.ofFloat(this, "translationX", getTranslationX(), x);
 
             animatorSet = new AnimatorSet();
             translationHeight.setDuration(300).setInterpolator(new AccelerateDecelerateInterpolator());

@@ -85,6 +85,8 @@ public class MapsActivity extends Activity {
         markerList = new MarkerList(this, null);
         markerDetails = new MarkerDetails(this, null);
         menuLayout.add(300, markerList, markerDetails);
+
+        menuLayout.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -178,6 +180,10 @@ public class MapsActivity extends Activity {
                                 mapRootView.mapReady(mapData);
 
                                 markerList.mapReady();
+
+                                menuLayout.setVisibility(View.VISIBLE);
+
+                                menuLayout.show(false, true, false);
 
                                 Service service = new Service();
                                 for (int i = 0; i < mapItems.size(); i++) {
