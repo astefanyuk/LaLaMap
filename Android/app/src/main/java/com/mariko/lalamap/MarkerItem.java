@@ -133,7 +133,7 @@ public class MarkerItem {
         set.start();
     }
 
-    protected void onEnd(){
+    protected void onEnd() {
         stopAnimation();
         item.rotate();
         marker.setIcon(BitmapDescriptorFactory.fromBitmap(item.getBitmap()));
@@ -168,7 +168,7 @@ public class MarkerItem {
             marker.setRotation(rotation);
 
         } else {
-           onEnd();
+            onEnd();
         }
 
         updateVisibility();
@@ -177,7 +177,7 @@ public class MarkerItem {
     private void updateVisibility() {
 
 
-        if(!item.supportsRotation){
+        if (!item.supportsRotation) {
             return;
         }
 
@@ -194,7 +194,7 @@ public class MarkerItem {
         }
     }
 
-    public LatLng getPosition(){
+    public LatLng getPosition() {
         return marker.getPosition();
     }
 

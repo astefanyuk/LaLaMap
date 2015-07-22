@@ -1,7 +1,6 @@
 package com.mariko.lalamap;
 
 import android.animation.ObjectAnimator;
-import android.graphics.Point;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -60,7 +59,7 @@ public class MapMainItem extends MarkerItem {
 
         item.pointRightBottom = null;
 
-        if(destinationMarkerItem != null){
+        if (destinationMarkerItem != null) {
             item.pointRightBottom = destinationMarkerItem.getPosition();
         }
 

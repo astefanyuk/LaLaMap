@@ -14,7 +14,7 @@ public class Service {
 
     private static final String API_URL = "https://dl.dropboxusercontent.com/u/8155438";
 
-    public Observable<MapItemList> getMapItemList(){
+    public Observable<MapItemList> getMapItemList() {
 
         return Observable.create(new Observable.OnSubscribe<MapItemList>() {
             @Override
@@ -29,9 +29,9 @@ public class Service {
 
                     MapItemList mapItemList = mapItemsService.getList();
 
-                    for(MapItem item : mapItemList){
+                    for (MapItem item : mapItemList) {
 
-                       // item.images.add(new MediaItem("https://www.youtube.com/watch?v=xwidefc2wpc", true));
+                        // item.images.add(new MediaItem("https://www.youtube.com/watch?v=xwidefc2wpc", true));
 
                         item.images.add(new MediaItem("http://vignette4.wikia.nocookie.net/animalcrossing/images/e/e3/Lion-013-2048x2048.jpg/revision/latest?cb=20130406213028"));
                         item.images.add(new MediaItem("https://upload.wikimedia.org/wikipedia/commons/a/a1/Lions_Family_Portrait_Masai_Mara.jpg"));
@@ -45,20 +45,20 @@ public class Service {
 
                     subscriber.onNext(mapItemList);
 
-                }catch(Throwable e){
+                } catch (Throwable e) {
                     subscriber.onError(e);
-                }finally {
+                } finally {
                     subscriber.onCompleted();
                 }
             }
         });
     }
 
-    public String getImageUrl(MapItem item){
+    public String getImageUrl(MapItem item) {
         return API_URL + "/images/" + item.icon + ".png";
     }
 
-    public Observable<WikiData> getWiki(String data){
+    public Observable<WikiData> getWiki(String data) {
 
         RequestInterceptor requestInterceptor = new RequestInterceptor() {
 

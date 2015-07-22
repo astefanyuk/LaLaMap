@@ -10,7 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -29,7 +29,7 @@ import rx.schedulers.Schedulers;
 /**
  * Created by AStefaniuk on 27.04.2015.
  */
-public class MarkerDetails extends LinearLayout {
+public class MarkerDetails extends RelativeLayout {
 
     private final RecyclerView list;
     private final TextView title;
@@ -51,7 +51,7 @@ public class MarkerDetails extends LinearLayout {
         list.setAdapter(new RecyclerView.Adapter() {
             @Override
             public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-                return new AAAItemHolder(LayoutInflater.from(getContext()).inflate(R.layout.image_item, null));
+                return new DetailsItemHolder(LayoutInflater.from(getContext()).inflate(R.layout.image_item, null));
             }
 
             @Override
@@ -59,7 +59,7 @@ public class MarkerDetails extends LinearLayout {
 
                 MediaItem mediaItem = item.images.get(position);
 
-                AAAItemHolder destinationItemHolder = (AAAItemHolder) holder;
+                DetailsItemHolder destinationItemHolder = (DetailsItemHolder) holder;
 
                 destinationItemHolder.item = mediaItem;
                 Glide.with(getContext()).load(mediaItem.url).override(400, 400).fitCenter().into(destinationItemHolder.image);
@@ -87,24 +87,26 @@ public class MarkerDetails extends LinearLayout {
         });
     }
 
-    private static class AAAItemHolder extends android.support.v7.widget.RecyclerView.ViewHolder {
+    private static class DetailsItemHolder extends android.support.v7.widget.RecyclerView.ViewHolder {
 
         //public TextView title;
         public ImageView image;
         public MediaItem item;
 
-        public AAAItemHolder(View itemView) {
+        public DetailsItemHolder(View itemView) {
             super(itemView);
 
             //this.title = (TextView) itemView.findViewById(R.id.title);
             this.image = (ImageView) itemView.findViewById(R.id.image);
 
+            /*
             itemView.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                  //  GApp.sInstance.getBus().post(new MapsActivity.DestinationSelectedEvent(item));
+                    GApp.sInstance.getBus().post(new MapsActivity.DestinationSelectedEvent(item));
                 }
             });
+            */
         }
     }
 
@@ -126,7 +128,7 @@ public class MarkerDetails extends LinearLayout {
 
             @Override
             public void onError(Throwable e) {
-                //TODO: show error
+                //TODO: showInternal error
             }
 
             @Override
@@ -135,5 +137,6 @@ public class MarkerDetails extends LinearLayout {
                 body.setText(wikiData.getBody());
             }
         });
+
     }
 }

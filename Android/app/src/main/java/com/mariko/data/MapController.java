@@ -26,7 +26,7 @@ public class MapController {
         */
     }
 
-    public void setItems(MapItemList items){
+    public void setItems(MapItemList items) {
         this.items = items;
     }
 }

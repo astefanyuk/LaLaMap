@@ -74,7 +74,7 @@ public class MapRootView extends RelativeLayout {
         start();
     }
 
-    public void addItem(MapItem item){
+    public void addItem(MapItem item) {
         MarkerItem markerItem = new MarkerItem();
 
         markerItem.setItem(GApp.sInstance.getMapController(), item, map);
@@ -90,7 +90,7 @@ public class MapRootView extends RelativeLayout {
 
         item.supportsRotation = false;
 
-        item.pointLeftTop = new LatLng(0,0);
+        item.pointLeftTop = new LatLng(0, 0);
 
         item.init(BitmapFactory.decodeResource(GApp.sInstance.getResources(), R.drawable.airplane));
 
@@ -101,7 +101,7 @@ public class MapRootView extends RelativeLayout {
     }
 
     public void start() {
-       // airplane.setVisibility(View.VISIBLE);
+        // airplane.setVisibility(View.VISIBLE);
         showMapItems(true);
     }
 
@@ -153,7 +153,7 @@ public class MapRootView extends RelativeLayout {
             Point pointRightBottom = item.pointRightBottom == null ? null : mapData.projection.toScreenLocation(item.pointRightBottom);
 
             if (point == null && pointRightBottom == null) {
-                item.view.show(false);
+                item.view.showInternal(false);
                 continue;
             }
 
@@ -190,9 +190,9 @@ public class MapRootView extends RelativeLayout {
                     item.view.setPosition(mapData, (int) (rectPoint.left), (int) (rectPoint.top), (int) rectPoint.width(), (int) rectPoint.height());
                 }
 
-                item.view.show(true);
+                item.view.showInternal(true);
             } else {
-                item.view.show(false);
+                item.view.showInternal(false);
             }
 
         }

@@ -1,6 +1,7 @@
 package com.mariko.data;
 
 import retrofit.http.GET;
+
 /**
  * Created by AStefaniuk on 22.05.2015.
  */

@@ -11,25 +11,25 @@ public class WikiData {
 
     public Query query;
 
-    public static class Query{
+    public static class Query {
         public Hashtable<String, Page> pages;
     }
 
-    public static class Page{
+    public static class Page {
         public String pageid;
         public String title;
         public String extract;
     }
 
-    public String getTitle(){
-        if(query != null && query.pages != null && !query.pages.isEmpty()){
+    public String getTitle() {
+        if (query != null && query.pages != null && !query.pages.isEmpty()) {
             return query.pages.values().iterator().next().title;
         }
         return "";
     }
 
-    public String getBody(){
-        if(query != null && query.pages != null && !query.pages.isEmpty()){
+    public String getBody() {
+        if (query != null && query.pages != null && !query.pages.isEmpty()) {
             return query.pages.values().iterator().next().extract;
         }
         return "";

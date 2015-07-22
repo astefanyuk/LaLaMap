@@ -9,24 +9,24 @@ public class MediaItem {
     public String url;
     public boolean video;
 
-    public MediaItem(){
+    public MediaItem() {
 
     }
 
-    public MediaItem(String url, String title, String description){
+    public MediaItem(String url, String title, String description) {
 
         this.url = url;
         this.title = title;
         this.description = description;
     }
 
-    public MediaItem(String url){
+    public MediaItem(String url) {
 
         this.url = url;
 
     }
 
-    public MediaItem(String url, boolean video){
+    public MediaItem(String url, boolean video) {
 
         this.url = url;
         this.video = video;
