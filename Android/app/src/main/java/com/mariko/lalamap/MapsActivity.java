@@ -1,9 +1,14 @@
 package com.mariko.lalamap;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.View;
+import android.view.WindowManager;
 
 import com.badoo.mobile.util.WeakHandler;
 import com.bumptech.glide.Glide;
@@ -54,6 +59,7 @@ public class MapsActivity extends Activity {
     private final Runnable changeBrowserVisibilityRunnable = new Runnable() {
         @Override
         public void run() {
+            menuLayout.setDetailsEnabled(true);
             menuLayout.show(true);
         }
     };
@@ -84,9 +90,31 @@ public class MapsActivity extends Activity {
 
         markerList = new MarkerList(this, null);
         markerDetails = new MarkerDetails(this, null);
-        menuLayout.add(300, markerList, markerDetails);
 
+        menuLayout.add(markerList, markerDetails);
+
+        initMenuLayout();
+
+        menuLayout.setDetailsEnabled(false);
         menuLayout.setVisibility(View.INVISIBLE);
+    }
+
+    private void initMenuLayout() {
+        Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+        DisplayMetrics metrics = new DisplayMetrics();
+        display.getMetrics(metrics);
+
+        int maxWidth = (int) (metrics.widthPixels * 0.6f);
+
+        menuLayout.init((int) (maxWidth * 1 / 3f), maxWidth, (int) (GApp.sInstance.DPI * 100));
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        initMenuLayout();
+        markerList.abc();
     }
 
     @Override
@@ -116,6 +144,8 @@ public class MapsActivity extends Activity {
 
     @Subscribe
     public void destinationSelected(DestinationSelectedEvent event) {
+        menuLayout.show(false);
+        menuLayout.setDetailsEnabled(false);
         markerDetails.load(event.item);
         mapRootView.plainTo(mapData, event.item);
     }
@@ -125,12 +155,7 @@ public class MapsActivity extends Activity {
         mapRootView.plainDone(mapData);
 
         handler.removeCallbacks(changeBrowserVisibilityRunnable);
-
-        /*
-        if (!destinationListVisible) {
-            handler.postDelayed(changeBrowserVisibilityRunnable, 4000);
-        }
-        */
+        handler.postDelayed(changeBrowserVisibilityRunnable, 4000);
 
     }
 

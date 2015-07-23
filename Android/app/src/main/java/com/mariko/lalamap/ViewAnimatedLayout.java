@@ -10,6 +10,7 @@ public class ViewAnimatedLayout extends RelativeLayout {
 
     private ViewAnimated mainView;
     private ViewAnimated detailsView;
+    private int distance;
 
     public ViewAnimatedLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -20,7 +21,7 @@ public class ViewAnimatedLayout extends RelativeLayout {
     }
 
     private void showInternal(ViewAnimated view, boolean show, boolean animated) {
-        view.show(show ? 0 : -(view.getMeasuredWidth() - 100), animated);
+        view.show(show ? 0 : -(view.getMeasuredWidth() - distance), animated);
     }
 
     public boolean isMainVisible() {
@@ -31,7 +32,18 @@ public class ViewAnimatedLayout extends RelativeLayout {
         return this.getVisibility() == View.VISIBLE && detailsView.getVisibility() == View.VISIBLE && detailsView.getTranslationX() == 0;
     }
 
-    public void add(int width, View main, View details) {
+    public void init(int mainWidth, int detailsWidth, int distance) {
+        this.distance = distance;
+
+        mainView.getLayoutParams().width = mainWidth;
+        detailsView.getLayoutParams().width = detailsWidth;
+        detailsView.setPadding(mainWidth - mainView.getShadowWidth(), 0, 0, 0);
+
+        requestLayout();
+    }
+
+    public void add(View main, View details) {
+
         mainView = new ViewAnimated(getContext(), null);
         detailsView = new ViewAnimated(getContext(), null);
 
@@ -41,19 +53,14 @@ public class ViewAnimatedLayout extends RelativeLayout {
         addView(detailsView);
         addView(mainView);
 
-        mainView.getLayoutParams().width = width;
-        detailsView.getLayoutParams().width = 3 * width;
-        detailsView.setPadding(width - mainView.getShadowWidth(), 0, 0, 0);
-
-        mainView.requestLayout();
-        detailsView.requestLayout();
-
         mainView.setListener(new ViewAnimated.Listener() {
             @Override
             public void show(boolean show) {
 
                 ViewAnimatedLayout.this.showInternal(mainView, show);
-                ViewAnimatedLayout.this.showInternal(detailsView, show);
+                if (detailsView.isEnabled()) {
+                    ViewAnimatedLayout.this.showInternal(detailsView, show);
+                }
             }
         });
 
@@ -78,5 +85,9 @@ public class ViewAnimatedLayout extends RelativeLayout {
     public void show(boolean show) {
         showInternal(mainView, show);
         showInternal(detailsView, show);
+    }
+
+    public void setDetailsEnabled(boolean value) {
+        detailsView.setEnabled(value);
     }
 }

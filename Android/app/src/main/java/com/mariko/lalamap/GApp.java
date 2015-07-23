@@ -46,4 +46,13 @@ public class GApp extends Application {
     public Bus getBus() {
         return bus;
     }
+
+    public boolean isLandscape() {
+        Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+        DisplayMetrics metrics = new DisplayMetrics();
+        display.getMetrics(metrics);
+
+        return metrics.widthPixels >= metrics.heightPixels;
+
+    }
 }

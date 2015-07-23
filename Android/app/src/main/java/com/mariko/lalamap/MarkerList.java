@@ -30,7 +30,7 @@ public class MarkerList extends RelativeLayout {
 
         list = (RecyclerView) findViewById(R.id.list);
 
-        list.setLayoutManager(new GridLayoutManager(getContext(), 3));
+        list.setLayoutManager(new GridLayoutManager(getContext(), getSpanCount()));
 
         list.setAdapter(new RecyclerView.Adapter() {
             @Override
@@ -53,8 +53,14 @@ public class MarkerList extends RelativeLayout {
                 return GApp.sInstance.getMapController().items.size();
             }
         });
+    }
 
+    public void abc() {
+        ((GridLayoutManager) list.getLayoutManager()).setSpanCount(getSpanCount());
+    }
 
+    private int getSpanCount() {
+        return GApp.sInstance.isLandscape() ? 2 : 1;
     }
 
 

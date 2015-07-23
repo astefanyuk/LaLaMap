@@ -16,6 +16,7 @@ import android.widget.RelativeLayout;
 
 public class ViewAnimated extends RelativeLayout {
 
+    public static final int ANIMATION_DURATION = 300;
     private View mainView;
     private GestureDetector gestureDetector;
 
@@ -120,7 +121,7 @@ public class ViewAnimated extends RelativeLayout {
             ValueAnimator translationHeight = ObjectAnimator.ofFloat(this, "translationX", getTranslationX(), x);
 
             animatorSet = new AnimatorSet();
-            translationHeight.setDuration(300).setInterpolator(new AccelerateDecelerateInterpolator());
+            translationHeight.setDuration(ANIMATION_DURATION).setInterpolator(new AccelerateDecelerateInterpolator());
             animatorSet.play(translationHeight);
             animatorSet.start();
         }
