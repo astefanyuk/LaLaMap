@@ -1,8 +1,6 @@
 package com.mariko.lalamap;
 
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -18,9 +16,6 @@ import com.mariko.data.MapItem;
 import com.mariko.data.MediaItem;
 import com.mariko.data.Service;
 import com.mariko.data.WikiData;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
@@ -76,6 +71,8 @@ public class MarkerDetails extends RelativeLayout {
         findViewById(R.id.youtube).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+                GApp.sInstance.getBus().post(new TextSpeaker.TextSpeakerEvent(body.getText().toString()));
+                /*
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 try {
                     intent.setData(Uri.parse("https://www.youtube.com/results?search_query=" + URLEncoder.encode(item.key, "UTF-8")));
@@ -83,6 +80,7 @@ public class MarkerDetails extends RelativeLayout {
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }
+                */
             }
         });
     }

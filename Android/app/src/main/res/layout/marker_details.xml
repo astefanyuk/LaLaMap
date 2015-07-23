@@ -30,7 +30,7 @@
             android:layout_width="100dip"
             android:layout_height="44dip"
             android:layout_alignParentRight="true"
-            android:src="@drawable/youtube" />
+            android:src="@drawable/play" />
 
     </RelativeLayout>
 

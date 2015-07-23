@@ -72,6 +72,8 @@ public class MapsActivity extends Activity {
     private MarkerList markerList;
     private MarkerDetails markerDetails;
 
+    private TextSpeaker textSpeaker;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -133,13 +135,24 @@ public class MapsActivity extends Activity {
         super.onResume();
         GApp.sInstance.getBus().register(this);
         setupMap();
+
+        textSpeaker = new TextSpeaker(this);
     }
 
     @Override
     protected void onPause() {
         GApp.sInstance.getBus().unregister(this);
         handler.removeCallbacks(changeBrowserVisibilityRunnable);
+
+        textSpeaker.destroy();
+        textSpeaker = null;
+
         super.onPause();
+    }
+
+    @Subscribe
+    public void aasas(TextSpeaker.TextSpeakerEvent event) {
+        textSpeaker.speak(event.text);
     }
 
     @Subscribe
