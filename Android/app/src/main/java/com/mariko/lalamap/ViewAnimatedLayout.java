@@ -11,6 +11,7 @@ public class ViewAnimatedLayout extends RelativeLayout {
     private ViewAnimated mainView;
     private ViewAnimated detailsView;
     private int distance;
+    private int mainWidthMinWidth;
 
     public ViewAnimatedLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -21,7 +22,7 @@ public class ViewAnimatedLayout extends RelativeLayout {
     }
 
     private void showInternal(ViewAnimated view, boolean show, boolean animated) {
-        view.show(show ? 0 : -(view.getMeasuredWidth() - distance), animated);
+        view.show(show ? 0 : -(view.getLayoutParams().width - ((view == mainView) ? mainWidthMinWidth : distance)), animated);
     }
 
     public boolean isMainVisible() {
@@ -32,7 +33,8 @@ public class ViewAnimatedLayout extends RelativeLayout {
         return this.getVisibility() == View.VISIBLE && detailsView.getVisibility() == View.VISIBLE && detailsView.getTranslationX() == 0;
     }
 
-    public void init(int mainWidth, int detailsWidth, int distance) {
+    public void init(int mainWidth, int detailsWidth, int mainWidthMinWidth, int distance) {
+        this.mainWidthMinWidth = mainWidthMinWidth;
         this.distance = distance;
 
         mainView.getLayoutParams().width = mainWidth;

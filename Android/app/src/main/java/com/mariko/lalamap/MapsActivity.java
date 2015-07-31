@@ -56,7 +56,7 @@ public class MapsActivity extends Activity {
     }
 
     private WeakHandler handler = new WeakHandler();
-    private final Runnable changeBrowserVisibilityRunnable = new Runnable() {
+    private final Runnable showDetailedRunnable = new Runnable() {
         @Override
         public void run() {
             menuLayout.setDetailsEnabled(true);
@@ -108,7 +108,9 @@ public class MapsActivity extends Activity {
 
         int maxWidth = (int) (metrics.widthPixels * 0.6f);
 
-        menuLayout.init((int) (maxWidth * 1 / 3f), maxWidth, (int) (GApp.sInstance.DPI * 100));
+        int mainMenuWidth = (int) (maxWidth * 1 / 3f);
+
+        menuLayout.init(mainMenuWidth, maxWidth, (mainMenuWidth / markerList.getSpanCount()), (int) (GApp.sInstance.DPI * 100));
     }
 
     @Override
@@ -116,7 +118,7 @@ public class MapsActivity extends Activity {
         super.onConfigurationChanged(newConfig);
 
         initMenuLayout();
-        markerList.abc();
+        markerList.update();
     }
 
     @Override
@@ -142,7 +144,7 @@ public class MapsActivity extends Activity {
     @Override
     protected void onPause() {
         GApp.sInstance.getBus().unregister(this);
-        handler.removeCallbacks(changeBrowserVisibilityRunnable);
+        handler.removeCallbacks(showDetailedRunnable);
 
         textSpeaker.destroy();
         textSpeaker = null;
@@ -151,12 +153,13 @@ public class MapsActivity extends Activity {
     }
 
     @Subscribe
-    public void aasas(TextSpeaker.TextSpeakerEvent event) {
+    public void startSpeaker(TextSpeaker.TextSpeakerEvent event) {
         textSpeaker.speak(event.text);
     }
 
     @Subscribe
     public void destinationSelected(DestinationSelectedEvent event) {
+        handler.removeCallbacks(showDetailedRunnable);
         menuLayout.show(false);
         menuLayout.setDetailsEnabled(false);
         markerDetails.load(event.item);
@@ -165,10 +168,10 @@ public class MapsActivity extends Activity {
 
     @Subscribe
     public void stopEvent(StopEvent event) {
-        mapRootView.plainDone(mapData);
+        mapRootView.plainDone();
 
-        handler.removeCallbacks(changeBrowserVisibilityRunnable);
-        handler.postDelayed(changeBrowserVisibilityRunnable, 4000);
+        handler.removeCallbacks(showDetailedRunnable);
+        handler.postDelayed(showDetailedRunnable, 4000);
 
     }
 

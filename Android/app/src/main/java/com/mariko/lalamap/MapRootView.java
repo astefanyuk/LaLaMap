@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.RelativeLayout;
 
+import com.badoo.mobile.util.WeakHandler;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
@@ -30,6 +31,15 @@ public class MapRootView extends RelativeLayout {
 
     private MarkerItemList items = new MarkerItemList();
 
+    private final WeakHandler handler = new WeakHandler();
+
+    private Runnable r = new Runnable() {
+        @Override
+        public void run() {
+            map.animateCamera(CameraUpdateFactory.scrollBy(-500, 0));
+        }
+    };
+
     public MapRootView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -38,25 +48,20 @@ public class MapRootView extends RelativeLayout {
         mapItemsView = (ViewGroup) findViewById(R.id.mapItemsView);
 
         showMapItems(false);
-
-
     }
 
-    public void plainDone(final MapData mapData) {
+    public void plainDone() {
 
-        mapData.map.animateCamera(CameraUpdateFactory.newLatLngZoom(airplane.getDestinationMarkerItem().getPosition(), 5));
+        handler.removeCallbacks(r);
 
-        getHandler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mapData.map.animateCamera(CameraUpdateFactory.scrollBy(-500, 0));
-            }
-        }, 2000);
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(airplane.getDestinationMarkerItem().getPosition(), 5));
 
+        handler.postDelayed(r, 2000);
     }
-
 
     public void plainTo(MapData mapData, MapItem item) {
+
+        handler.removeCallbacks(r);
 
         airplane.getMarker().setVisible(true);
 

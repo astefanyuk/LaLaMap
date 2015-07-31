@@ -55,11 +55,11 @@ public class MarkerList extends RelativeLayout {
         });
     }
 
-    public void abc() {
+    public void update() {
         ((GridLayoutManager) list.getLayoutManager()).setSpanCount(getSpanCount());
     }
 
-    private int getSpanCount() {
+    public int getSpanCount() {
         return GApp.sInstance.isLandscape() ? 2 : 1;
     }
 
