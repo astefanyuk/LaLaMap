@@ -34,12 +34,15 @@ public class ViewAnimatedLayout extends RelativeLayout {
     }
 
     public void init(int mainWidth, int detailsWidth, int mainWidthMinWidth, int distance) {
+
         this.mainWidthMinWidth = mainWidthMinWidth;
         this.distance = distance;
 
         mainView.getLayoutParams().width = mainWidth;
         detailsView.getLayoutParams().width = detailsWidth;
         detailsView.setPadding(mainWidth - mainView.getShadowWidth(), 0, 0, 0);
+
+        show(isMainVisible(), isDetailsVisible(), false);
 
         requestLayout();
     }

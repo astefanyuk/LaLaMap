@@ -1,7 +1,7 @@
 package com.mariko.lalamap;
 
 import android.content.Context;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -41,7 +41,18 @@ public class MarkerDetails extends RelativeLayout {
 
         list.setHasFixedSize(true);
 
-        list.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        GridLayoutManager manager = new GridLayoutManager(getContext(), 2);
+        /*
+        manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                return 3;//position %2 == 0 ? 3 : 2;// (3 - position % 3);
+            }
+        });
+        */
+
+        // list.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        list.setLayoutManager(manager);
 
         list.setAdapter(new RecyclerView.Adapter() {
             @Override
@@ -57,7 +68,7 @@ public class MarkerDetails extends RelativeLayout {
                 DetailsItemHolder destinationItemHolder = (DetailsItemHolder) holder;
 
                 destinationItemHolder.item = mediaItem;
-                Glide.with(getContext()).load(mediaItem.url).override(400, 400).fitCenter().into(destinationItemHolder.image);
+                Glide.with(getContext()).load(mediaItem.url).override(100, 100).fitCenter().into(destinationItemHolder.image);
 
                 //Glide.with(getContext()).load(new Service().getImageUrl(item)).into(destinationItemHolder.image);
             }

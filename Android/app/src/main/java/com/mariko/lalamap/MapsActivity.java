@@ -74,6 +74,8 @@ public class MapsActivity extends Activity {
 
     private TextSpeaker textSpeaker;
 
+    private View showList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,7 +84,10 @@ public class MapsActivity extends Activity {
         mapRootView = (MapRootView) findViewById(R.id.mapRootView);
         setupMap();
 
-        findViewById(R.id.showList).setOnClickListener(new View.OnClickListener() {
+        showList = findViewById(R.id.showList);
+        showList.setVisibility(View.INVISIBLE);
+
+        showList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 GApp.sInstance.getBus().post(new ShowBrowserEvent(true));
@@ -177,12 +182,11 @@ public class MapsActivity extends Activity {
 
     @Subscribe
     public void showBrowserEvent(ShowBrowserEvent event) {
-        /*
-        if (event.show == destinationListVisible) {
-            return;
+        if (menuLayout.isMainVisible()) {
+            menuLayout.show(false, false, true);
+        } else {
+            menuLayout.show(true, false, true);
         }
-        changeDestinationListVisibility();
-        */
     }
 
     private void setupMap() {
@@ -223,6 +227,8 @@ public class MapsActivity extends Activity {
                                 markerList.mapReady();
 
                                 menuLayout.setVisibility(View.VISIBLE);
+
+                                showList.setVisibility(View.VISIBLE);
 
                                 menuLayout.show(false, true, false);
 
