@@ -1,19 +1,17 @@
 package com.mariko.lalamap;
 
 import android.content.Context;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.mariko.data.MapItem;
-import com.mariko.data.MediaItem;
 import com.mariko.data.Service;
 import com.mariko.data.WikiData;
 
@@ -26,58 +24,19 @@ import rx.schedulers.Schedulers;
  */
 public class MarkerDetails extends RelativeLayout {
 
-    private final RecyclerView list;
     private final TextView title;
     private final TextView body;
+    private GridLayout list;
 
     public MarkerDetails(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         LayoutInflater.from(context).inflate(R.layout.marker_details, this);
 
-        list = (RecyclerView) findViewById(R.id.list);
+        list = (GridLayout) findViewById(R.id.list);
+
         title = (TextView) findViewById(R.id.title);
         body = (TextView) findViewById(R.id.body);
-
-        list.setHasFixedSize(true);
-
-        GridLayoutManager manager = new GridLayoutManager(getContext(), 2);
-        /*
-        manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-            @Override
-            public int getSpanSize(int position) {
-                return 3;//position %2 == 0 ? 3 : 2;// (3 - position % 3);
-            }
-        });
-        */
-
-        // list.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-        list.setLayoutManager(manager);
-
-        list.setAdapter(new RecyclerView.Adapter() {
-            @Override
-            public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-                return new DetailsItemHolder(LayoutInflater.from(getContext()).inflate(R.layout.image_item, null));
-            }
-
-            @Override
-            public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-
-                MediaItem mediaItem = item.images.get(position);
-
-                DetailsItemHolder destinationItemHolder = (DetailsItemHolder) holder;
-
-                destinationItemHolder.item = mediaItem;
-                Glide.with(getContext()).load(mediaItem.url).override(100, 100).fitCenter().into(destinationItemHolder.image);
-
-                //Glide.with(getContext()).load(new Service().getImageUrl(item)).into(destinationItemHolder.image);
-            }
-
-            @Override
-            public int getItemCount() {
-                return item == null ? 0 : item.images.size();
-            }
-        });
 
         findViewById(R.id.youtube).setOnClickListener(new OnClickListener() {
             @Override
@@ -96,35 +55,56 @@ public class MarkerDetails extends RelativeLayout {
         });
     }
 
-    private static class DetailsItemHolder extends android.support.v7.widget.RecyclerView.ViewHolder {
-
-        //public TextView title;
-        public ImageView image;
-        public MediaItem item;
-
-        public DetailsItemHolder(View itemView) {
-            super(itemView);
-
-            //this.title = (TextView) itemView.findViewById(R.id.title);
-            this.image = (ImageView) itemView.findViewById(R.id.image);
-
-            /*
-            itemView.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    GApp.sInstance.getBus().post(new MapsActivity.DestinationSelectedEvent(item));
-                }
-            });
-            */
-        }
-    }
-
     private MapItem item;
+
+    private Rect getSpanItem(int[] a, int index) {
+
+        Rect rect = null;
+
+        for (int i = 0; i < a.length; i++) {
+
+            if ((a[i] + "").contains(index + "")) {
+                if (rect == null) {
+                    rect = new Rect();
+                    rect.left = ((a[i] + "").indexOf("" + index));
+                    rect.top = (i);
+                }
+
+                rect.right = Math.max(rect.right, ((a[i] + "").lastIndexOf("" + index)));
+                rect.bottom = Math.max(rect.bottom, (i));
+            }
+
+        }
+        return rect;
+    }
 
     public void load(MapItem item) {
         this.item = item;
 
-        list.getAdapter().notifyDataSetChanged();
+        list.removeAllViews();
+
+        int[] span = getSpanList(item.images.size());
+
+        list.setColumnCount((span[0] + "").length());
+        list.setRowCount(span.length);
+
+        for (int i = 0; i < item.images.size(); i++) {
+            Rect rect = getSpanItem(span, i + 1);
+            if (rect == null) {
+                continue;
+            }
+
+            ImageView imageView = new ImageView(getContext(), null);
+
+            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+
+            list.addView(imageView);
+
+            ((GridLayout.LayoutParams) imageView.getLayoutParams()).columnSpec = GridLayout.spec(rect.left, rect.width() + 1);
+            ((GridLayout.LayoutParams) imageView.getLayoutParams()).rowSpec = GridLayout.spec(rect.top, rect.height() + 1);
+
+            Glide.with(getContext()).load(item.images.get(i).url).override(100 * (rect.width() + 1), 100 * (rect.height() + 1)).into(imageView);
+        }
 
         title.setText("");
         body.setText("");
@@ -146,6 +126,44 @@ public class MarkerDetails extends RelativeLayout {
                 body.setText(wikiData.getBody());
             }
         });
+
+    }
+
+    private int[] getSpanList(int count) {
+        switch (count) {
+
+            case 0:
+                return new int[]{};
+
+            case 1:
+                return new int[]{1};
+
+            case 2:
+                return new int[]{1, 2};
+
+            case 3:
+                return new int[]{112, 113};
+
+            case 4:
+                return new int[]{1112, 1113, 1114};
+
+            case 5:
+                return new int[]{1124, 1135};
+
+            case 6:
+                return new int[]{234, 115, 116};
+
+            case 7:
+                return new int[]{11123, 11156, 11167};
+
+            case 8:
+                return new int[]{2345, 1116, 1117, 1118};
+
+            case 9:
+            default:
+                return new int[]{2345, 6117, 8119};
+
+        }
 
     }
 }

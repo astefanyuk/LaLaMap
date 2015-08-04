@@ -7,10 +7,13 @@
     android:orientation="vertical"
     android:padding="8dip">
 
-    <android.support.v7.widget.RecyclerView
+    <GridLayout
         android:id="@+id/list"
+        android:columnCount="4"
         android:layout_width="match_parent"
-        android:layout_height="200dip" />
+        android:layout_height="250dip">
+
+    </GridLayout>
 
     <RelativeLayout
         android:id="@+id/titleLayout"
