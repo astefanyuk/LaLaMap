@@ -116,6 +116,8 @@ public class MapsActivity extends Activity {
         int mainMenuWidth = (int) (maxWidth * 1 / 3f);
 
         menuLayout.init(mainMenuWidth, maxWidth, (mainMenuWidth / markerList.getSpanCount()), (int) (GApp.sInstance.DPI * 100));
+
+        markerDetails.setListHeight((int) ((maxWidth - mainMenuWidth) * 2.0 / 3.0f));
     }
 
     @Override

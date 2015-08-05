@@ -1,6 +1,7 @@
 package com.mariko.lalamap;
 
 import android.content.Context;
+import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -11,6 +12,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 import com.mariko.data.MapItem;
 import com.mariko.data.Service;
 import com.mariko.data.WikiData;
@@ -53,24 +57,33 @@ public class MarkerDetails extends RelativeLayout {
                 */
             }
         });
+
+        list.addOnLayoutChangeListener(new OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                if ((right - left) != (oldRight - oldLeft) || (top - bottom) != (oldTop - oldBottom)) {
+                    loadImages();
+                }
+            }
+        });
     }
 
     private MapItem item;
 
-    private Rect getSpanItem(int[] a, int index) {
+    private Rect getSpanItem(int[] items, int index) {
 
         Rect rect = null;
 
-        for (int i = 0; i < a.length; i++) {
+        for (int i = 0; i < items.length; i++) {
 
-            if ((a[i] + "").contains(index + "")) {
+            if ((items[i] + "").contains(index + "")) {
                 if (rect == null) {
                     rect = new Rect();
-                    rect.left = ((a[i] + "").indexOf("" + index));
+                    rect.left = ((items[i] + "").indexOf("" + index));
                     rect.top = (i);
                 }
 
-                rect.right = Math.max(rect.right, ((a[i] + "").lastIndexOf("" + index)));
+                rect.right = Math.max(rect.right, ((items[i] + "").lastIndexOf("" + index)));
                 rect.bottom = Math.max(rect.bottom, (i));
             }
 
@@ -81,30 +94,7 @@ public class MarkerDetails extends RelativeLayout {
     public void load(MapItem item) {
         this.item = item;
 
-        list.removeAllViews();
-
-        int[] span = getSpanList(item.images.size());
-
-        list.setColumnCount((span[0] + "").length());
-        list.setRowCount(span.length);
-
-        for (int i = 0; i < item.images.size(); i++) {
-            Rect rect = getSpanItem(span, i + 1);
-            if (rect == null) {
-                continue;
-            }
-
-            ImageView imageView = new ImageView(getContext(), null);
-
-            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-
-            list.addView(imageView);
-
-            ((GridLayout.LayoutParams) imageView.getLayoutParams()).columnSpec = GridLayout.spec(rect.left, rect.width() + 1);
-            ((GridLayout.LayoutParams) imageView.getLayoutParams()).rowSpec = GridLayout.spec(rect.top, rect.height() + 1);
-
-            Glide.with(getContext()).load(item.images.get(i).url).override(100 * (rect.width() + 1), 100 * (rect.height() + 1)).into(imageView);
-        }
+        loadImages();
 
         title.setText("");
         body.setText("");
@@ -127,6 +117,76 @@ public class MarkerDetails extends RelativeLayout {
             }
         });
 
+    }
+
+    public void loadImages() {
+        list.removeAllViews();
+
+        if (this.item == null) {
+            return;
+        }
+
+        int[] span = getSpanList(item.images.size());
+
+        if (span.length > 0) {
+
+            list.setColumnCount((span[0] + "").length());
+            list.setRowCount(span.length);
+
+            int cellHeight = (int) (list.getLayoutParams().height / span.length - GApp.sInstance.DPI * 0);
+            int cellWidth = (int) (list.getMeasuredWidth() * 1.0f / ("" + span[0]).length() - GApp.sInstance.DPI * 0);
+
+            int padding = (int) (GApp.sInstance.DPI * 2);
+
+            for (int i = 0; i < item.images.size(); i++) {
+                Rect rect = getSpanItem(span, i + 1);
+                if (rect == null) {
+                    continue;
+                }
+
+                View view = LayoutInflater.from(getContext()).inflate(R.layout.image_item, null);
+
+                view.setPadding(padding, padding, padding, padding);
+
+                final ImageView imageView = (ImageView) view.findViewById(R.id.image);
+
+                list.addView(view);
+
+                imageView.getLayoutParams().width = cellWidth * (rect.width() + 1) + 2 * rect.width() * padding;
+                imageView.getLayoutParams().height = cellHeight * (rect.height() + 1) + 2 * rect.height() * padding;
+
+                ((GridLayout.LayoutParams) view.getLayoutParams()).columnSpec = GridLayout.spec(rect.left, rect.width() + 1);
+                ((GridLayout.LayoutParams) view.getLayoutParams()).rowSpec = GridLayout.spec(rect.top, rect.height() + 1);
+
+                Glide.with(getContext())
+                        .load(item.images.get(i).url)
+                        .into(new GlideDrawableImageViewTarget(imageView) {
+                            @Override
+                            public void onResourceReady(GlideDrawable drawable, GlideAnimation anim) {
+
+                                imageView.setScaleType(ImageView.ScaleType.MATRIX);
+                                Matrix matrix = new Matrix();
+
+                                int width = imageView.getLayoutParams().width;
+                                int height = imageView.getLayoutParams().height;
+
+                                int widthBitmap = drawable.getIntrinsicWidth();
+                                int heightBitmap = drawable.getIntrinsicHeight();
+
+                                while (widthBitmap < width || heightBitmap < height) {
+                                    widthBitmap += 1;
+                                    heightBitmap = (int) (drawable.getIntrinsicHeight() * widthBitmap * 1.0f / drawable.getIntrinsicWidth());
+                                }
+
+                                matrix.preScale(widthBitmap * 1.0f / drawable.getIntrinsicWidth(), heightBitmap * 1.0f / drawable.getIntrinsicHeight());
+
+                                imageView.setImageMatrix(matrix);
+
+                                super.onResourceReady(drawable, anim);
+                            }
+                        });
+            }
+        }
     }
 
     private int[] getSpanList(int count) {
@@ -165,5 +225,10 @@ public class MarkerDetails extends RelativeLayout {
 
         }
 
+    }
+
+    public void setListHeight(int height) {
+        list.getLayoutParams().height = height;
+        requestLayout();
     }
 }
