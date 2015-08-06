@@ -185,9 +185,9 @@ public class MapsActivity extends Activity {
     @Subscribe
     public void showBrowserEvent(ShowBrowserEvent event) {
         if (menuLayout.isMainVisible()) {
-            menuLayout.show(false, false, true);
+            menuLayout.show(false);
         } else {
-            menuLayout.show(true, false, true);
+            menuLayout.show(true);
         }
     }
 

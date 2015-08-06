@@ -18,6 +18,9 @@ public class ViewAnimatedLayout extends RelativeLayout {
     }
 
     private void showInternal(ViewAnimated view, boolean show) {
+        if(show && !view.isEnabled()){
+            return;
+        }
         showInternal(view, show, true);
     }
 
