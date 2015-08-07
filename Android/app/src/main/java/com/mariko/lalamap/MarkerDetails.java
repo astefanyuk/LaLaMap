@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.text.SpannableStringBuilder;
+import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -124,10 +125,30 @@ public class MarkerDetails extends RelativeLayout {
                 title.setText(wikiData.getTitle());
                 SpannableStringBuilder ss = new SpannableStringBuilder(wikiData.getBody());
 
-                //TODO: fixme
-                ss.insert(60, "\n");
-                ss.insert(120, "\n");
-                ss.insert(180, "\n");
+                int maxWidth = (int) (list.getMeasuredWidth() - GApp.sInstance.DPI * 100);
+
+                String text = wikiData.getBody();
+
+                TextPaint textPaint = body.getPaint();
+                int index = 0;
+                Rect rect = new Rect();
+                int lines = 0;
+                for (int i = 0; i < text.length() && lines < 3; i++) {
+                    textPaint.getTextBounds(text, index, i, rect);
+                    if (rect.width() >= maxWidth) {
+
+                        for (int j = i; j >= 0; j--) {
+                            if (!Character.isLetterOrDigit(text.charAt(j))) {
+                                i = j;
+                                break;
+                            }
+                        }
+
+                        ss.insert(i + lines, "\n");
+                        ++lines;
+                        index = i;
+                    }
+                }
 
                 body.setText(ss);
             }

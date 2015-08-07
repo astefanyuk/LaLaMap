@@ -36,11 +36,9 @@
             android:layout_below="@+id/titleLayout">
 
             <android.support.v7.widget.CardView
-
-                xmlns:card_view="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/card_view"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:elevation="8dip"
                 card_view:cardCornerRadius="4dp">
 
