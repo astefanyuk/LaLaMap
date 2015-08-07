@@ -3,6 +3,7 @@ package com.mariko.lalamap;
 import android.content.Context;
 import android.graphics.Matrix;
 import android.graphics.Rect;
+import android.text.SpannableStringBuilder;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
+import com.mariko.animation.ScrollViewEx;
 import com.mariko.data.MapItem;
 import com.mariko.data.Service;
 import com.mariko.data.WikiData;
@@ -36,6 +38,13 @@ public class MarkerDetails extends RelativeLayout {
         super(context, attrs);
 
         LayoutInflater.from(context).inflate(R.layout.marker_details, this);
+
+        ((ScrollViewEx) findViewById(R.id.scroll)).setListener(new ScrollViewEx.Listener() {
+            @Override
+            public void onScrollChanged(int newScrollY) {
+                list.setTranslationY((int) (newScrollY * 0.7f));
+            }
+        });
 
         list = (GridLayout) findViewById(R.id.list);
 
@@ -113,7 +122,14 @@ public class MarkerDetails extends RelativeLayout {
             @Override
             public void onNext(WikiData wikiData) {
                 title.setText(wikiData.getTitle());
-                body.setText(wikiData.getBody());
+                SpannableStringBuilder ss = new SpannableStringBuilder(wikiData.getBody());
+
+                //TODO: fixme
+                ss.insert(60, "\n");
+                ss.insert(120, "\n");
+                ss.insert(180, "\n");
+
+                body.setText(ss);
             }
         });
 
@@ -231,4 +247,5 @@ public class MarkerDetails extends RelativeLayout {
         list.getLayoutParams().height = height;
         requestLayout();
     }
+
 }
