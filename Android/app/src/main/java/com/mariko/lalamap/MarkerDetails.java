@@ -52,7 +52,7 @@ public class MarkerDetails extends RelativeLayout {
         title = (TextView) findViewById(R.id.title);
         body = (TextView) findViewById(R.id.body);
 
-        findViewById(R.id.youtube).setOnClickListener(new OnClickListener() {
+        findViewById(R.id.listen).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 GApp.sInstance.getBus().post(new TextSpeaker.TextSpeakerEvent(body.getText().toString()));

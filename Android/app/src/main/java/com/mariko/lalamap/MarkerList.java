@@ -1,8 +1,8 @@
 package com.mariko.lalamap;
 
 import android.content.Context;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,7 +30,7 @@ public class MarkerList extends RelativeLayout {
 
         list = (RecyclerView) findViewById(R.id.list);
 
-        list.setLayoutManager(new GridLayoutManager(getContext(), getSpanCount()));
+        list.setLayoutManager(new StaggeredGridLayoutManager(getSpanCount(), StaggeredGridLayoutManager.VERTICAL));
 
         list.setAdapter(new RecyclerView.Adapter() {
             @Override
@@ -56,7 +56,7 @@ public class MarkerList extends RelativeLayout {
     }
 
     public void update() {
-        ((GridLayoutManager) list.getLayoutManager()).setSpanCount(getSpanCount());
+        ((StaggeredGridLayoutManager) list.getLayoutManager()).setSpanCount(getSpanCount());
     }
 
     public int getSpanCount() {

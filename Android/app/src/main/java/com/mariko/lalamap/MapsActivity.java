@@ -55,6 +55,8 @@ public class MapsActivity extends Activity {
         }
     }
 
+    private View loader;
+
     private WeakHandler handler = new WeakHandler();
     private final Runnable showDetailedRunnable = new Runnable() {
         @Override
@@ -80,6 +82,8 @@ public class MapsActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+        loader = findViewById(R.id.loader);
         menuLayout = (ViewAnimatedLayout) findViewById(R.id.menuLayout);
         mapRootView = (MapRootView) findViewById(R.id.mapRootView);
         setupMap();
@@ -212,12 +216,13 @@ public class MapsActivity extends Activity {
                         new Service().getMapItemList().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<MapItemList>() {
                             @Override
                             public void onCompleted() {
-
+                                loader.setVisibility(View.GONE);
                             }
 
                             @Override
                             public void onError(Throwable e) {
                                 //TODO: display error
+                                e.printStackTrace();
                             }
 
                             @Override
