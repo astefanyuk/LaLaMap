@@ -21,13 +21,13 @@ public class GApp extends Application {
 
     public GApp() {
         sInstance = this;
-
-
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
+
+        com.squareup.leakcanary.LeakCanary.install(this);
 
         Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
         DisplayMetrics metrics = new DisplayMetrics();
